@@ -1,9 +1,29 @@
 #library('xpath.dart');
 #import('dart:html');
+#source('util.dart');
 #source('xpath_item.dart');
 #source('xpath_sequence.dart');
 #source('xpath_node_type.dart');
 #source('xpath_node.dart');
+#source('xpath_evaluation_engine.dart');
+#source('xpath_static_environment.dart');
+#source('xpath_dynamic_environment.dart');
+#source('xsd_type.dart');
+#source('xpath_function_arity.dart');
+#source('xpath_function_signature.dart');
+#source('xpath_function.dart');
+#source('xpath_variable.dart');
+#source('xpath_lexical_state.dart');
+#source('xpath_lexeme_pattern.dart');
+#source('xpath_pattern_context_pair.dart');
+#source('xpath_token_context.dart');
+#source('xpath_token_kind.dart');
+#source('xpath_token_name.dart');
+#source('xpath_pattern_item.dart');
+#source('xpath_token.dart');
+#source('xpath_token_info.dart');
+#source('xpath_expression_node.dart');
+#source('xpath_syntax_node_kind.dart');
 void main() {
   print("Hello, World!");
 }
