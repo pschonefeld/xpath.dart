@@ -369,21 +369,21 @@ class XpathEvaluationEngine {
                 }
                 result.last().info.add(new XpathTokenInfo());
                 name = getLexemeTokenString(originalPattern[0].value);
-                result.last().info.last().value = parseInt(name);
+                result.last().info.last().value = int.parse(name);
                 result.last().info.last().type = "integer";
               }
               else if(tokenName=="DoubleLiteral"){ 
-                ((_XPathToken)result.lastElement()).Info.add(new _XPathTokenInfo());
-                name = GetLexemeTokenString(((_PatternItem)originalPattern.get(0)).Value);
-                ((_XPathTokenInfo)((_XPathToken)result.lastElement()).Info.lastElement()).Value = Double.parseDouble(name);
-                ((_XPathTokenInfo)((_XPathToken)result.lastElement()).Info.lastElement()).Type = "double";
+                result.last().info.add(new XpathTokenInfo());
+                name = getLexemeTokenString(originalPattern[0].value);
+                result.last().info.last().value = double.parse(name);
+                result.last().info.last().type = "double";
               }
               else if(tokenName=="NCName:NCName"){
                 if( (precedingToken=="/") || 
                   (precedingToken=="//") ||
                   (precedingToken=="[") ||
                   (precedingToken=="") ){
-                  result.add(0,GetChildAxisTokenEntry());
+                  result.add(0,getChildAxisTokenEntry());
                 }
                 ((_XPathToken)result.lastElement()).Info.add(new _XPathTokenInfo());
                 name = GetLexemeTokenString(((_PatternItem)originalPattern.get(0)).Value);
