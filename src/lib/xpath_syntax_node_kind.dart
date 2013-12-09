@@ -1,3 +1,5 @@
+part of xpath.dart;
+
 class XpathSyntaxNodeKind {
   static const int
   UNDEFINED = -1,
@@ -15,5 +17,13 @@ class XpathSyntaxNodeKind {
   ETNK_PREDICATE = 11;
   int value = UNDEFINED;
   XpathSyntaxNodeKind.set(this.value);
-  operator ==(XpathSyntaxNodeKind other) => this.value == other.value;
+  operator ==(var other) {
+    if(other.runtimeType == int){
+      return this.value == other;
+    }
+    else if(other.runtimeType == XpathSyntaxNodeKind){
+      return this.value == other.value;
+    }
+    else return false;
+  }
 }

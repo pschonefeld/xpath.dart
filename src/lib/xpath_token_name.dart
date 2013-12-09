@@ -43,5 +43,13 @@ class XpathTokenName {
   CLOSE_BRACKET = 38;
   int value = UNDEFINED;
   XpathTokenName.set(this.value);  
-  operator ==(XpathTokenName other) => this.value == other.value;
+  operator ==(var other) {
+    if(other.runtimeType == int){
+      return this.value == other;
+    }
+    else if(other.runtimeType == XpathTokenName){
+      return this.value == other.value;
+    }
+    else return false;
+  }
 }

@@ -1,8 +1,26 @@
+/* 
+xpath.dart is a dart implementation of XPath 2.0 
+Author: Peter Schonefeld (peter dot schonefeld at gmail)
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+part of xpath.dart;
 
 class XpathEvaluationEngine {
  
-  const int XPATH_NUM_KNOWN_BASIC_TOKENS = 40;
-  const int XPATH_MAX_PATTERN_LOOKAHEAD = 3;  
+  static const int XPATH_NUM_KNOWN_BASIC_TOKENS = 40;
+  static const int XPATH_MAX_PATTERN_LOOKAHEAD = 3;  
 
   static XpathEvaluationEngine _instance;  
   
@@ -10,23 +28,23 @@ class XpathEvaluationEngine {
   List<XpathLexemePattern> patterns = [];
   
   List<int>               pass1Expr = []; //tokenize into basic lexemes
-  List<XpathPatternItem>  pass2Expr = []; //normalise white space
-  List<XpathPatternItem>  pass2ExprUsed = []; //account for used patterns
-  List<XpathToken>        pass3Expr = []; //tokens with state
+  List<int>  pass2Expr = []; //normalise white space
+  List<int>  pass2ExprUsed = []; //account for used patterns
+  List<XpathTokenEntry>        pass3Expr = []; //tokens with state
 
   List<XpathToken> exprStack = []; //TODO:  
   XpathExpressionNode exprTree;
   
   //Dictionaries
-  Map<String, XpathTokenContext> dictDefault = {};
-  Map<String, XpathTokenContext> dictOperator = {};
-  Map<String, XpathTokenContext> dictQName = {};
-  Map<String, XpathTokenContext> dictItemType = {};
-  Map<String, XpathTokenContext> dictVarName = {};
+  Map<String, XpathExprToken> dictDefault = {};
+  Map<String, XpathExprToken> dictOperator = {};
+  Map<String, XpathExprToken> dictQName = {};
+  Map<String, XpathExprToken> dictItemType = {};
+  Map<String, XpathExprToken> dictVarName = {};
   
   int _tokenParseCount;
-  int _state;
-  XpathToken currentToken;
+  XpathLexicalState _state;
+  XpathTokenEntry _currentToken;
   int _pass1Count;
   bool isInError = false;
   String ErrorMsg = "";
@@ -76,33 +94,33 @@ class XpathEvaluationEngine {
     this.buildBasicLexeme(expr);
     this.normaliseWhiteSpace(); //second pass ...TODO: at the moment this actually deletes ws??
     this.tokenize(); //third pass
-    if(this.Pass2Expr.size()!=this.Pass2ExprUsed.size()){
-      this.IsInError = true;
+    if(this.pass2Expr.length!=this.pass2ExprUsed.length){
+      this.isInError = true;
       this.ErrorMsg = "";
-      for(int i = 0; i < this.Pass2Expr.size();i++){
-        boolean found = false;
-        for(int j = 0; j < this.Pass2ExprUsed.size(); j++){
-          if(((_PatternItem)this.Pass2Expr.get(i)).OriginalPosition == ((_PatternItem)this.Pass2ExprUsed.get(j)).OriginalPosition){
+      for(int i = 0; i < this.pass2Expr.length;i++){
+        bool found = false;
+        for(int j = 0; j < this.pass2ExprUsed.length; j++){
+          if((this.pass2Expr[i] as XpathPatternItem).originalPosition == (this.pass2ExprUsed[j] as XpathPatternItem).originalPosition){
             found = true;
             break;
           }
         }
         if(found){
-          this.ErrorMsg += getTokenName(i);
+          this.ErrorMsg += "";// getTokenName(i);
         }
-        else this.ErrorMsg += "<span style='color:red'>"+getTokenName(i)+"</span>";
+        else this.ErrorMsg += "";//"<span style='color:red'>"+getTokenName(i)+"</span>";
       }
     }
-    if(!this.IsInError){
+    if(!this.isInError){
       //PARSE
-      this.BuildExprTree();
+      this.buildExprTree();
     }
   }
   
   void buildBasicLexeme(String expr){
     var char; 
     for(_pass1Count=0; _pass1Count<expr.length;_pass1Count++){
-      char = expr.splitChars()[_pass1Count];
+      char = expr[_pass1Count];
       int tokenid = this.tokens[char];
       if(tokenid!=null && tokenid <= XPATH_NUM_KNOWN_BASIC_TOKENS){ //this is a known symbol
         this.pass1Expr.add(tokenid);
@@ -142,11 +160,11 @@ class XpathEvaluationEngine {
     int countQuote = 1;
     while(_pass1Count<str.length && !endOfWord){
       if(_pass1Count!=str.length-1){
-        if(str.splitChars()[_pass1Count+1]!=delimit){
-          result = result.concat(str.splitChars()[++_pass1Count]);
+        if(str[_pass1Count+1]!=delimit){
+          result += str[++_pass1Count];
         }
-        else if(str.splitChars()[_pass1Count+2] == delimit){
-          result = result.concat(delimit);
+        else if(str[_pass1Count+2] == delimit){
+          result += delimit;
           _pass1Count += 2;
           countQuote += 2;
         }
@@ -169,20 +187,20 @@ class XpathEvaluationEngine {
     bool endofword = false;
     String result = "";
     int countPeriod = 0;
-    result = result.concat(str.splitChars()[_pass1Count]);
+    result += str[_pass1Count];
     while(_pass1Count<str.length && !endofword){
       if(_pass1Count!=str.length-1){
-        if(str.splitChars()[_pass1Count+1]=='.'){
+        if(str[_pass1Count+1]=='.'){
           if(countPeriod==0) {
-            result = result.concat(str.splitChars()[++_pass1Count]);
+            result += str[++_pass1Count];
             countPeriod++;
           }
           else {
             endofword=true; 
           }
         }
-        else if(Util.isDigit(str.splitChars()[_pass1Count+1])){
-          result = result.concat(str.splitChars()[++_pass1Count]);
+        else if(Util.isDigit(str[_pass1Count+1])){
+          result += str[++_pass1Count];
         }
         else {
           endofword=true;
@@ -198,16 +216,16 @@ class XpathEvaluationEngine {
   String getWord(String str){ //TODO: better support XML 
     String result = "";
     bool endOfWord = false;
-    result = result.concat(str.splitChars()[_pass1Count]);
+    result += str[_pass1Count];
     while(_pass1Count<str.length && !endOfWord){
       if(_pass1Count!=str.length-1){
         if(isKnownSymbol(str,_pass1Count+1)) {
-          if(str.splitChars()[_pass1Count+1]=='-' || str.splitChars()[_pass1Count+1]=='.') {
-            result = result.concat(str.splitChars()[++_pass1Count]);
+          if(str[_pass1Count+1]=='-' || str[_pass1Count+1]=='.') {
+            result += str[++_pass1Count];
           }
-          else endOfWord=true;
+          else endOfWord = true;
         }
-        else result = result.concat(str.splitChars()[++_pass1Count]);
+        else result += str[++_pass1Count];
       }
       else endOfWord=true;
     }
@@ -215,11 +233,11 @@ class XpathEvaluationEngine {
   }
   
   bool isKnownSymbol(String str, int pos){
-    String key = str.splitChars()[pos];
-    if(this.tokens[key]!=null)
-      return this.tokens[key]<=XPATH_NUM_KNOWN_BASIC_TOKENS?true:false;
-    else 
-      return false;
+    String key = str[pos];
+    if(this.tokens[key]!=null){
+      return this.tokens[key]<=XPATH_NUM_KNOWN_BASIC_TOKENS? true: false;
+    }
+    return false;
   } 
   
   void normaliseWhiteSpace(){
@@ -233,14 +251,15 @@ class XpathEvaluationEngine {
         break;
       }
     }
-    this.pass2Expr.add(new XpathPatternItem(this.pass1Expr[startPos],0));
+
+    this.pass2Expr.add(this.pass1Expr[startPos]);
     
     int pos = 0;
     //collapse contained ws 
     for(var i = startPos; i<this.pass1Expr.length; i++){
       startPos = i+1;     
       if(!isWhitespace(this.pass1Expr[i])) {
-        this.pass2Expr.add(new XpathPatternItem(this.pass1Expr[startPos],++pos));
+        this.pass2Expr.add(this.pass1Expr[startPos]);
       }
     }
   }  
@@ -254,8 +273,8 @@ class XpathEvaluationEngine {
   }
   
   void tokenize(){
-    this._state = XpathLexicalState.DEFAULT_STATE;
-    List<XpathToken> tokens = new List<XpathToken>();
+    this._state = new XpathLexicalState.set(XpathLexicalState.DEFAULT_STATE);
+    List<XpathTokenEntry> tokens = new List<XpathTokenEntry>();
     for(_tokenParseCount=0;_tokenParseCount<this.pass2Expr.length;_tokenParseCount++){
       tokens.clear();
       tokens = getPatternMatch();
@@ -265,39 +284,70 @@ class XpathEvaluationEngine {
     }
   }
 
-  List<XpathToken> getPatternMatch(){
+  void buildExprTree(){
+    this.pass3Expr.forEach((XpathTokenEntry t){
+      this._currentToken = t;
+      this.exprTree = new XpathExpressionNode();
+      this.exprTree.isRoot = true;      
+    });
+  }
+
+
+  XpathTokenEntry getChildAxisTokenEntry(){
+    return new XpathTokenEntry(new XpathPatternTokenPair("child::",this.dictQName["child::"]));
+  }
+  
+  XpathTokenEntry getFunctionCallTokenEntry(XpathTokenName name){
+    XpathExprToken token = null;
+    String sname = "";
+    switch(name.value){
+      case XpathTokenName.QNAME_CALL:
+        sname = "NCName:NCName(";
+        token = this.dictDefault[sname]; //XpathExprToken
+        break;
+      case XpathTokenName.LOCALNAME_CALL:
+        sname = "LocalPart(";       
+        token = this.dictDefault["LocalPart("];
+        break;
+    }
+    if(token!=null){
+      return new XpathTokenEntry(new XpathPatternTokenPair(sname,token));
+    }
+    return null;    
+  }  
+
+  List<XpathTokenEntry> getPatternMatch(){
     
     //TODO: a test to see if all elements in the expression pass have been tokenized.
-    List<XpathToken> result = []; //GWT Compile
+    List<XpathTokenEntry> result = []; //GWT Compile
     int startCount = _tokenParseCount;
-    int lookahead = ((_tokenParseCount+XPATH_MAX_PATTERN_LOOKAHEAD)>=this.pass2Expr.length)?
-            this.pass2Expr.length-(_tokenParseCount+1):
+    int lookahead = ((_tokenParseCount + XPATH_MAX_PATTERN_LOOKAHEAD) >= this.pass2Expr.length)?
+            this.pass2Expr.length - (_tokenParseCount+1):
             XPATH_MAX_PATTERN_LOOKAHEAD;
     int jumpahead = 0;
     
-    List<XpathPatternItem> originalPattern = [], patternBuffer = [];
-    XpathPatternItem t; 
+    List<int> originalPattern = [], patternBuffer = [];
+    int ct; 
     bool match = false;
     for(int i = 0; i<=lookahead; i++){
-      t = this.pass2Expr[_tokenParseCount+i];
-      originalPattern.add(t);
-      if(t.value>XPATH_NUM_KNOWN_BASIC_TOKENS) {
-        t = new XpathPatternItem(classifyUnknownLexeme(t.value),t.value);
+      int ct = this.pass2Expr[_tokenParseCount+i];
+      originalPattern.add(ct);
+      if(ct>XPATH_NUM_KNOWN_BASIC_TOKENS) {
+        ct = classifyUnknownLexeme(ct);
       }
-      patternBuffer.add(t);
+      patternBuffer.add(ct);
     }
 
-    Iterator it; 
+    Iterator<XpathLexemePattern> it; 
     do {
-      it = this.patterns.iterator();       
-      while(it.hasNext()){
-        XpathLexemePattern i = it.next();
-        if(isPatternBufferAPattern(patternBuffer,i.pattern)){
+      it = this.patterns.iterator;
+      while(it.moveNext()){
+        if(isPatternBufferAPattern(patternBuffer,it.current.pattern)){
           match = true;
           jumpahead = lookahead;
           break;
         }
-      }   
+      }
       if(!match) {
         if(patternBuffer.length>0){
           patternBuffer.removeLast();
@@ -307,10 +357,10 @@ class XpathEvaluationEngine {
     } while (!match && lookahead>=0);
 
     if(match) {
-      it = this.patterns.iterator();
+      it = this.patterns.iterator;
       bool foundToken = false;
-      while(it.hasNext() && !foundToken)  {
-        XpathLexemePattern current = it.next();
+      while(it.moveNext() && !foundToken)  {
+        XpathLexemePattern current = it.current;
         if(isPatternBufferAPattern(patternBuffer,current.pattern)){
           foundToken = false; //must not add two tokens for the same pattern
                     //this is important in the case where a token sets
@@ -318,130 +368,131 @@ class XpathEvaluationEngine {
                     //in the token list for the pattern.
           this.pass2ExprUsed.addAll(patternBuffer); //account for used symbols
           for(int i=0;i<current.tokens.length;i++){
-            if(this._state == current.tokens[i].context.state && !foundToken){
+            if(this._state == current.tokens[i].token.state && !foundToken){
               foundToken = true;
-              this._state = current.tokens[i].context.toState;
-              result.add(new XpathToken(new XpathPatternContextPair(current.tokens[i].pattern, current.tokens[i].context)));
+              this._state = current.tokens[i].token.nextState;
+              //result.add(new XPathTokenEntry(new PatternTokenPair(((PatternTokenPair)current.TokenMap.get(i)).Pattern,((PatternTokenPair)              
+              result.add(new XpathTokenEntry(new XpathPatternTokenPair(current.tokens[i].pattern, current.tokens[i].token)));
               String tokenName = current.tokens[i].pattern;
               String name = "";
-              String precedingToken = this.pass3Expr.length > 0? this.pass3Expr.last().item.pattern : "";
+              String precedingToken = this.pass3Expr.length > 0? this.pass3Expr.last.token.pattern : "";
               if(tokenName=="LocalPart"){
                 if( (precedingToken=="/") || 
                   (precedingToken=="//") ||
                   (precedingToken=="[") ||
                   (precedingToken=="") ||
-                  (current.tokens[i].context.state==XpathLexicalState.DEFAULT_STATE) ){
+                  (current.tokens[i].token.state == XpathLexicalState.DEFAULT_STATE) ){
                   //It's ok to insert token here because it will not effect state.
-                  result.insertRange(0, 1, getChildAxisTokenEntry());
+                  result.insert(0,getChildAxisTokenEntry());
                 }
-                result.last().info.add(new XpathTokenInfo());
-                name = getLexemeTokenString(originalPattern[0].value);
-                result.last().info.last().value = name;
-                result.last().info.last().type = "string";
+                result.last.info.add(new XpathTokenInfo());
+                name = getLexemeTokenString(originalPattern[0]);
+                result.last.info.last.value = name;
+                result.last.info.last.type = "string";
               }
               else if(tokenName=="StringLiteral"){ 
-                result.last().info.add(new XpathTokenInfo());
-                name = getLexemeTokenString(originalPattern[0].value);
-                result.last().info.last().value = name;
-                result.last().info.last().type = "string";
+                result.last.info.add(new XpathTokenInfo());
+                name = getLexemeTokenString(originalPattern[0]);
+                result.last.info.last.value = name;
+                result.last.info.last.type = "string";
               }
               else if(tokenName=="IntegerLiteral"){
                 if(precedingToken=="["){
                   //abreviation somenode[5] => somenode[position()=5]
-                  XpathTokenContext jt = this.dictOperator["="];
+                  XpathExprToken jt = this.dictOperator["="];
                   if(jt!=null){
-                    result.insertRange(0, 1,new XpathToken(new XpathPatternContextPair("=",jt)));
+                    result.insert(0, new XpathTokenEntry(new XpathPatternTokenPair("=",jt)));
                   }
                   jt = this.dictDefault[")"];
                   if(jt!=null){
-                    result.insertRange(0, 1,new XpathToken(new XpathPatternContextPair(")",jt)));
+                    result.insert(0, new XpathTokenEntry(new XpathPatternTokenPair(")",jt)));
                   }
-                  XpathToken te = getFunctionCallTokenEntry(XpathTokenName.QNAME_CALL);
+                  XpathTokenEntry te = getFunctionCallTokenEntry(new XpathTokenName.set(XpathTokenName.QNAME_CALL));
                   te.info.add(new XpathTokenInfo());
                   name = "fn";
-                  te.info.last().value = name;
-                  te.info.last().type = "string";
+                  te.info.last.value = name;
+                  te.info.last.type = "string";
                   te.info.add(new XpathTokenInfo());
                   name = "position";
-                  te.info.last().value = name;
-                  te.info.last().type = "string";
-                  result.insertRange(0,1,te);
+                  te.info.last.value = name;
+                  te.info.last.type = "string";
+                  result.insert(0,te);
                 }
-                result.last().info.add(new XpathTokenInfo());
-                name = getLexemeTokenString(originalPattern[0].value);
-                result.last().info.last().value = int.parse(name);
-                result.last().info.last().type = "integer";
+                result.last.info.add(new XpathTokenInfo());
+                name = getLexemeTokenString(originalPattern[0]);
+                result.last.info.last.value = int.parse(name);
+                result.last.info.last.type = "integer";
               }
               else if(tokenName=="DoubleLiteral"){ 
-                result.last().info.add(new XpathTokenInfo());
-                name = getLexemeTokenString(originalPattern[0].value);
-                result.last().info.last().value = double.parse(name);
-                result.last().info.last().type = "double";
+                result.last.info.add(new XpathTokenInfo());
+                name = getLexemeTokenString(originalPattern[0]);
+                result.last.info.last.value = double.parse(name);
+                result.last.info.last.type = "double";
               }
               else if(tokenName=="NCName:NCName"){
                 if( (precedingToken=="/") || 
                   (precedingToken=="//") ||
                   (precedingToken=="[") ||
                   (precedingToken=="") ){
-                  result.add(0,getChildAxisTokenEntry());
+                  result.insert(0,getChildAxisTokenEntry());
                 }
-                ((_XPathToken)result.lastElement()).Info.add(new _XPathTokenInfo());
-                name = GetLexemeTokenString(((_PatternItem)originalPattern.get(0)).Value);
-                ((_XPathTokenInfo)((_XPathToken)result.lastElement()).Info.lastElement()).Value = name;
-                ((_XPathTokenInfo)((_XPathToken)result.lastElement()).Info.lastElement()).Type = "string";
-                ((_XPathToken)result.lastElement()).Info.add(new _XPathTokenInfo());
-                name = GetLexemeTokenString(((_PatternItem)originalPattern.get(2)).Value);
-                ((_XPathTokenInfo)((_XPathToken)result.lastElement()).Info.lastElement()).Value = name;
-                ((_XPathTokenInfo)((_XPathToken)result.lastElement()).Info.lastElement()).Type = "string";
+                result.last.info.add(new XpathTokenInfo());
+                name = getLexemeTokenString(originalPattern[0]);
+                result.last.info.last.value = name;
+                result.last.info.last.type = "string";
+                result.last.info.add(new XpathTokenInfo());
+                name = getLexemeTokenString(originalPattern[2]);
+                result.last.info.last.value = name;
+                result.last.info.last.type = "string";
               }
               else if(tokenName=="*"){
                 if( (precedingToken=="/") || 
                   (precedingToken=="//") ||
                   (precedingToken=="[") ||
                   (precedingToken=="") ){
-                  result.add(0,GetChildAxisTokenEntry());
+                  result.insert(0,getChildAxisTokenEntry());
                 }
-                ((_XPathToken)result.lastElement()).Info.add(new _XPathTokenInfo());
+                result.last.info.add(new XpathTokenInfo());
               }
               else if(tokenName=="NCName:*"){
                 if( (precedingToken=="/") || 
                   (precedingToken=="//") ||
                   (precedingToken=="[")||
                   (precedingToken=="")){
-                  result.add(0,GetChildAxisTokenEntry());
+                  result.insert(0,getChildAxisTokenEntry());
                 }
-                ((_XPathToken)result.lastElement()).Info.add(new _XPathTokenInfo());
-                name = GetLexemeTokenString(((_PatternItem)originalPattern.get(0)).Value);
-                ((_XPathTokenInfo)((_XPathToken)result.lastElement()).Info.lastElement()).Value = name;
-                ((_XPathTokenInfo)((_XPathToken)result.lastElement()).Info.lastElement()).Type = "string";
+                result.last.info.add(new XpathTokenInfo());
+                name = getLexemeTokenString(originalPattern[0]);
+                result.last.info.last.value = name;
+                result.last.info.last.type = "string";
               }
               else if(tokenName=="*:NCName"){
                 if( (precedingToken=="/") || 
                   (precedingToken=="//") ||
                   (precedingToken=="[")  ||
                   (precedingToken=="") ){
-                  result.add(0,GetChildAxisTokenEntry());
+                  result.insert(0,getChildAxisTokenEntry());
                 }
-                ((_XPathToken)result.lastElement()).Info.add(new _XPathTokenInfo());
-                name = GetLexemeTokenString(((_PatternItem)originalPattern.get(2)).Value);
-                ((_XPathTokenInfo)((_XPathToken)result.lastElement()).Info.lastElement()).Value = name;
-                ((_XPathTokenInfo)((_XPathToken)result.lastElement()).Info.lastElement()).Type = "string";
+                result.last.info.add(new XpathTokenInfo());
+                name = getLexemeTokenString(originalPattern[2]);
+                result.last.info.last.value = name;
+                result.last.info.last.type = "string";
               }
               else if(tokenName=="NCName:NCName("){
-                ((_XPathToken)result.lastElement()).Info.add(new _XPathTokenInfo());
-                name = GetLexemeTokenString(((_PatternItem)originalPattern.get(0)).Value);
-                ((_XPathTokenInfo)((_XPathToken)result.lastElement()).Info.lastElement()).Value = name;
-                ((_XPathTokenInfo)((_XPathToken)result.lastElement()).Info.lastElement()).Type = "string";
-                ((_XPathToken)result.lastElement()).Info.add(new _XPathTokenInfo());
-                name = GetLexemeTokenString(((_PatternItem)originalPattern.get(2)).Value);
-                ((_XPathTokenInfo)((_XPathToken)result.lastElement()).Info.lastElement()).Value = name;
-                ((_XPathTokenInfo)((_XPathToken)result.lastElement()).Info.lastElement()).Type = "string";
+                result.last.info.add(new XpathTokenInfo());
+                name = getLexemeTokenString(originalPattern[0]);
+                result.last.info.last.value = name;
+                result.last.info.last.type = "string";
+                result.last.info.add(new XpathTokenInfo());
+                name = getLexemeTokenString(originalPattern[2]);
+                result.last.info.last.value = name;
+                result.last.info.last.type = "string";
               }
               else if(tokenName=="LocalPart("){
-                ((_XPathToken)result.lastElement()).Info.add(new _XPathTokenInfo());
-                name = GetLexemeTokenString(((_PatternItem)originalPattern.get(0)).Value);
-                ((_XPathTokenInfo)((_XPathToken)result.lastElement()).Info.lastElement()).Value = name;
-                ((_XPathTokenInfo)((_XPathToken)result.lastElement()).Info.lastElement()).Type = "string";
+                result.last.info.add(new XpathTokenInfo());
+                name = getLexemeTokenString(originalPattern[0]);
+                result.last.info.last.value = name;
+                result.last.info.last.type = "string";
               }
               else if(tokenName=="node()" || 
                   tokenName=="text()" || 
@@ -451,10 +502,10 @@ class XpathEvaluationEngine {
                   (precedingToken=="//") ||
                   (precedingToken=="[") ||
                   (precedingToken=="") ||
-                  (((_PatternContextPair)current.TokenMap.get(i)).Context.State==_XPathLexicalState.DEFAULT_STATE) ){
+                  (current.tokens[i].token.state == XpathLexicalState.DEFAULT_STATE)){
                   //It's ok to insert token here because it will
                   //not effect state.
-                  result.add(0,GetChildAxisTokenEntry());
+                  result.insert(0,getChildAxisTokenEntry());
                 }
               }
             }
@@ -466,38 +517,14 @@ class XpathEvaluationEngine {
     return result;
   }
   
-  XpathToken getFunctionCallTokenEntry(int name){
-    XpathToken result;
-    XpathTokenContext token = null;
-    String strName = "";
-    switch(name){
-      case XpathTokenName.QNAME_CALL:
-        strName = "NCName:NCName(";
-        token = this.dictDefault[strName];
-        break;
-      case XpathTokenName.LOCALNAME_CALL:
-        strName = "LocalPart(";       
-        token = this.dictDefault["LocalPart("];
-        break;
-    }
-    if(token!=null){
-      result = new XpathToken(new XpathPatternContextPair(strName,token));
-    }
-    return result;    
-  }
-  
-  XpathToken getChildAxisTokenEntry(){
-    return new XpathToken(new XpathPatternContextPair("child::",this.dictQName["child::"]));
-  }  
-  
-  bool isPatternBufferAPattern(List<XpathPatternItem> p1, List<int> p2){
+  bool isPatternBufferAPattern(List<int> p1, List<int> p2){
     bool result = true;
     if(p1.length!=p2.length){
       result = false;
     }
     if(result==true){
       for(int i = 0; i<p1.length; i++) {
-        if(p1[i].value!=p2[i]) {
+        if(p1[i]!=p2[i]) {
           result = false;
           break;
         }
@@ -509,13 +536,13 @@ class XpathEvaluationEngine {
   int classifyUnknownLexeme(int i){
     int result = 1;
     String tokenStr = this.getLexemeTokenString(i);
-    if(Util.isLetter(tokenStr.splitChars()[0])) {
+    if(Util.isLetter(tokenStr[0])) {
       result = 0;
     }
-    else if(tokenStr.splitChars()[0]=='"' || tokenStr.splitChars()[0]=="'") {
+    else if(tokenStr[0]=='"' || tokenStr[0]=="'") {
       result = -1;
     }
-    else if(Util.isDigit(tokenStr.splitChars()[0])){
+    else if(Util.isDigit(tokenStr[0])){
       result = -2;
     }
     return result;    
@@ -524,7 +551,7 @@ class XpathEvaluationEngine {
   String getLexemeTokenString(int id){
     String result;
     if(this.tokens.containsValue(id)){
-      for(String key in this.tokens.getKeys()){
+      for(String key in this.tokens.keys){
         if(this.tokens[key]==id){
           result = key;
           break;
@@ -533,148 +560,153 @@ class XpathEvaluationEngine {
     }
     return result;    
   }
-  
+
   //** INITITALIZATION (on _instance once only)
-  
+
   void _initDefaultDictionary(){
     
-    this.dictDefault["("] = new XpathTokenContext(XpathTokenKind.XXXTODOXXX,XpathTokenName.LEFTPAREN,XpathLexicalState.DEFAULT_STATE,XpathLexicalState.DEFAULT_STATE,0);
-    this.dictDefault[")"] = new XpathTokenContext(XpathTokenKind.XXXTODOXXX,XpathTokenName.RIGHTPAREN,XpathLexicalState.DEFAULT_STATE,XpathLexicalState.OPERATOR_STATE,0);
+    this.dictDefault["("] = new XpathExprToken.set(
+        new XpathTokenKind.set(XpathTokenKind.XXXTODOXXX),
+        new XpathTokenName.set(XpathTokenName.LEFTPAREN),
+        new XpathLexicalState.set(XpathLexicalState.DEFAULT_STATE),
+        new XpathLexicalState.set(XpathLexicalState.DEFAULT_STATE),0);
+    
+    this.dictDefault[")"] = new XpathExprToken.set(XpathTokenKind.XXXTODOXXX,XpathTokenName.RIGHTPAREN,XpathLexicalState.DEFAULT_STATE,XpathLexicalState.OPERATOR_STATE,0);
 
     // "StringLiteral" 
-    this.dictDefault["StringLiteral"] = new XpathTokenContext(XpathTokenKind.XXXTODOXXX,XpathTokenName.STRING_LITERAL,XpathLexicalState.DEFAULT_STATE,XpathLexicalState.OPERATOR_STATE,0);
-    this.dictDefault["IntegerLiteral"] = new XpathTokenContext(XpathTokenKind.XXXTODOXXX,XpathTokenName.INTEGER_LITERAL,XpathLexicalState.DEFAULT_STATE,XpathLexicalState.OPERATOR_STATE,0);
-    this.dictDefault["DecimalLiteral"] = new XpathTokenContext(XpathTokenKind.XXXTODOXXX,XpathTokenName.DECIMAL_LITERAL,XpathLexicalState.DEFAULT_STATE,XpathLexicalState.OPERATOR_STATE,0);
-    this.dictDefault["DoubleLiteral"] = new XpathTokenContext(XpathTokenKind.XXXTODOXXX,XpathTokenName.DOUBLE_LITERAL,XpathLexicalState.DEFAULT_STATE,XpathLexicalState.OPERATOR_STATE,0);
+    this.dictDefault["StringLiteral"] = new XpathExprToken.set(XpathTokenKind.XXXTODOXXX,XpathTokenName.STRING_LITERAL,XpathLexicalState.DEFAULT_STATE,XpathLexicalState.OPERATOR_STATE,0);
+    this.dictDefault["IntegerLiteral"] = new XpathExprToken.set(XpathTokenKind.XXXTODOXXX,XpathTokenName.INTEGER_LITERAL,XpathLexicalState.DEFAULT_STATE,XpathLexicalState.OPERATOR_STATE,0);
+    this.dictDefault["DecimalLiteral"] = new XpathExprToken.set(XpathTokenKind.XXXTODOXXX,XpathTokenName.DECIMAL_LITERAL,XpathLexicalState.DEFAULT_STATE,XpathLexicalState.OPERATOR_STATE,0);
+    this.dictDefault["DoubleLiteral"] = new XpathExprToken.set(XpathTokenKind.XXXTODOXXX,XpathTokenName.DOUBLE_LITERAL,XpathLexicalState.DEFAULT_STATE,XpathLexicalState.OPERATOR_STATE,0);
 
     //steps
-    this.dictDefault["/"] = new XpathTokenContext(XpathTokenKind.XXXTODOXXX,XpathTokenName.FORWARDSLASH,XpathLexicalState.DEFAULT_STATE,XpathLexicalState.QNAME_STATE,0);
-    this.dictDefault["//"] = new XpathTokenContext(XpathTokenKind.XXXTODOXXX,XpathTokenName.DOUBLE_FORWARDSLASH,XpathLexicalState.DEFAULT_STATE,XpathLexicalState.QNAME_STATE,0);
+    this.dictDefault["/"] = new XpathExprToken.set(XpathTokenKind.XXXTODOXXX,XpathTokenName.FORWARDSLASH,XpathLexicalState.DEFAULT_STATE,XpathLexicalState.QNAME_STATE,0);
+    this.dictDefault["//"] = new XpathExprToken.set(XpathTokenKind.XXXTODOXXX,XpathTokenName.DOUBLE_FORWARDSLASH,XpathLexicalState.DEFAULT_STATE,XpathLexicalState.QNAME_STATE,0);
 
     // axis
-    this.dictDefault["child::"] = new XpathTokenContext(XpathTokenKind.XXXTODOXXX,XpathTokenName.CHILD_AXIS,XpathLexicalState.DEFAULT_STATE, XpathLexicalState.QNAME_STATE,6);
-    this.dictDefault["descendant::"] = new XpathTokenContext(XpathTokenKind.XXXTODOXXX,XpathTokenName.DESCENDANT_AXIS,XpathLexicalState.DEFAULT_STATE, XpathLexicalState.QNAME_STATE,6);
-    this.dictDefault["parent::"] = new XpathTokenContext(XpathTokenKind.XXXTODOXXX,XpathTokenName.PARENT_AXIS,XpathLexicalState.DEFAULT_STATE, XpathLexicalState.QNAME_STATE,6);
-    this.dictDefault["attribute::"] = new XpathTokenContext(XpathTokenKind.XXXTODOXXX,XpathTokenName.ATTRIBUTE_AXIS,XpathLexicalState.DEFAULT_STATE, XpathLexicalState.QNAME_STATE,6);
-    this.dictDefault["self::"] = new XpathTokenContext(XpathTokenKind.XXXTODOXXX,XpathTokenName.SELF_AXIS,XpathLexicalState.DEFAULT_STATE, XpathLexicalState.QNAME_STATE,6);
-    this.dictDefault["descendant-or-self::"] = new XpathTokenContext(XpathTokenKind.XXXTODOXXX,XpathTokenName.DESCENDANT_OR_SELF_AXIS,XpathLexicalState.DEFAULT_STATE, XpathLexicalState.QNAME_STATE,6);
-    this.dictDefault["ancestor::"] = new XpathTokenContext(XpathTokenKind.XXXTODOXXX,XpathTokenName.ANCESTOR_AXIS,XpathLexicalState.DEFAULT_STATE, XpathLexicalState.QNAME_STATE,6);
-    this.dictDefault["ancestor-or-self::"] = new XpathTokenContext(XpathTokenKind.XXXTODOXXX,XpathTokenName.ANCESTOR_OR_SELF_AXIS,XpathLexicalState.DEFAULT_STATE, XpathLexicalState.QNAME_STATE,6);
-    this.dictDefault["following-sibling::"] = new XpathTokenContext(XpathTokenKind.XXXTODOXXX,XpathTokenName.FOLLOWING_SIBLING_AXIS,XpathLexicalState.DEFAULT_STATE, XpathLexicalState.QNAME_STATE,6);
-    this.dictDefault["following::"] = new XpathTokenContext(XpathTokenKind.XXXTODOXXX,XpathTokenName.FOLLOWING_AXIS,XpathLexicalState.DEFAULT_STATE, XpathLexicalState.QNAME_STATE,6);
-    this.dictDefault["preceding::"] = new XpathTokenContext(XpathTokenKind.XXXTODOXXX,XpathTokenName.PRECEDING_AXIS,XpathLexicalState.DEFAULT_STATE, XpathLexicalState.QNAME_STATE,6);
-    this.dictDefault["preceding-sibling::"] = new XpathTokenContext(XpathTokenKind.XXXTODOXXX,XpathTokenName.PRECEDING_SIBLING_AXIS,XpathLexicalState.DEFAULT_STATE,XpathLexicalState.QNAME_STATE,6);
-    this.dictDefault["namespace::"] = new XpathTokenContext(XpathTokenKind.XXXTODOXXX,XpathTokenName.NAMESPACE_AXIS,XpathLexicalState.DEFAULT_STATE, XpathLexicalState.QNAME_STATE,6);
+    this.dictDefault["child::"] = new XpathExprToken.set(XpathTokenKind.XXXTODOXXX,XpathTokenName.CHILD_AXIS,XpathLexicalState.DEFAULT_STATE, XpathLexicalState.QNAME_STATE,6);
+    this.dictDefault["descendant::"] = new XpathExprToken.set(XpathTokenKind.XXXTODOXXX,XpathTokenName.DESCENDANT_AXIS,XpathLexicalState.DEFAULT_STATE, XpathLexicalState.QNAME_STATE,6);
+    this.dictDefault["parent::"] = new XpathExprToken.set(XpathTokenKind.XXXTODOXXX,XpathTokenName.PARENT_AXIS,XpathLexicalState.DEFAULT_STATE, XpathLexicalState.QNAME_STATE,6);
+    this.dictDefault["attribute::"] = new XpathExprToken.set(XpathTokenKind.XXXTODOXXX,XpathTokenName.ATTRIBUTE_AXIS,XpathLexicalState.DEFAULT_STATE, XpathLexicalState.QNAME_STATE,6);
+    this.dictDefault["self::"] = new XpathExprToken.set(XpathTokenKind.XXXTODOXXX,XpathTokenName.SELF_AXIS,XpathLexicalState.DEFAULT_STATE, XpathLexicalState.QNAME_STATE,6);
+    this.dictDefault["descendant-or-self::"] = new XpathExprToken.set(XpathTokenKind.XXXTODOXXX,XpathTokenName.DESCENDANT_OR_SELF_AXIS,XpathLexicalState.DEFAULT_STATE, XpathLexicalState.QNAME_STATE,6);
+    this.dictDefault["ancestor::"] = new XpathExprToken.set(XpathTokenKind.XXXTODOXXX,XpathTokenName.ANCESTOR_AXIS,XpathLexicalState.DEFAULT_STATE, XpathLexicalState.QNAME_STATE,6);
+    this.dictDefault["ancestor-or-self::"] = new XpathExprToken.set(XpathTokenKind.XXXTODOXXX,XpathTokenName.ANCESTOR_OR_SELF_AXIS,XpathLexicalState.DEFAULT_STATE, XpathLexicalState.QNAME_STATE,6);
+    this.dictDefault["following-sibling::"] = new XpathExprToken.set(XpathTokenKind.XXXTODOXXX,XpathTokenName.FOLLOWING_SIBLING_AXIS,XpathLexicalState.DEFAULT_STATE, XpathLexicalState.QNAME_STATE,6);
+    this.dictDefault["following::"] = new XpathExprToken.set(XpathTokenKind.XXXTODOXXX,XpathTokenName.FOLLOWING_AXIS,XpathLexicalState.DEFAULT_STATE, XpathLexicalState.QNAME_STATE,6);
+    this.dictDefault["preceding::"] = new XpathExprToken.set(XpathTokenKind.XXXTODOXXX,XpathTokenName.PRECEDING_AXIS,XpathLexicalState.DEFAULT_STATE, XpathLexicalState.QNAME_STATE,6);
+    this.dictDefault["preceding-sibling::"] = new XpathExprToken.set(XpathTokenKind.XXXTODOXXX,XpathTokenName.PRECEDING_SIBLING_AXIS,XpathLexicalState.DEFAULT_STATE,XpathLexicalState.QNAME_STATE,6);
+    this.dictDefault["namespace::"] = new XpathExprToken.set(XpathTokenKind.XXXTODOXXX,XpathTokenName.NAMESPACE_AXIS,XpathLexicalState.DEFAULT_STATE, XpathLexicalState.QNAME_STATE,6);
 
     //names
-    this.dictDefault["*"] = new XpathTokenContext(XpathTokenKind.XXXTODOXXX,XpathTokenName.WILDCARD,XpathLexicalState.DEFAULT_STATE,XpathLexicalState.OPERATOR_STATE,0);
-    this.dictDefault["NCName:*"] = new XpathTokenContext(XpathTokenKind.XXXTODOXXX,XpathTokenName.LOCALNAME_WILDCARD,XpathLexicalState.DEFAULT_STATE,XpathLexicalState.OPERATOR_STATE,0);
-    this.dictDefault["*:NCName"] = new XpathTokenContext(XpathTokenKind.XXXTODOXXX,XpathTokenName.NAMESPACE_WILDCARD,XpathLexicalState.DEFAULT_STATE,XpathLexicalState.OPERATOR_STATE,0);
-    this.dictDefault["LocalPart"] = new XpathTokenContext(XpathTokenKind.XXXTODOXXX,XpathTokenName.LOCALNAME,XpathLexicalState.DEFAULT_STATE,XpathLexicalState.OPERATOR_STATE,0);
-    this.dictDefault["NCName:NCName"] = new XpathTokenContext(XpathTokenKind.XXXTODOXXX,XpathTokenName.QNAME,XpathLexicalState.DEFAULT_STATE,XpathLexicalState.OPERATOR_STATE,0);
+    this.dictDefault["*"] = new XpathExprToken.set(XpathTokenKind.XXXTODOXXX,XpathTokenName.WILDCARD,XpathLexicalState.DEFAULT_STATE,XpathLexicalState.OPERATOR_STATE,0);
+    this.dictDefault["NCName:*"] = new XpathExprToken.set(XpathTokenKind.XXXTODOXXX,XpathTokenName.LOCALNAME_WILDCARD,XpathLexicalState.DEFAULT_STATE,XpathLexicalState.OPERATOR_STATE,0);
+    this.dictDefault["*:NCName"] = new XpathExprToken.set(XpathTokenKind.XXXTODOXXX,XpathTokenName.NAMESPACE_WILDCARD,XpathLexicalState.DEFAULT_STATE,XpathLexicalState.OPERATOR_STATE,0);
+    this.dictDefault["LocalPart"] = new XpathExprToken.set(XpathTokenKind.XXXTODOXXX,XpathTokenName.LOCALNAME,XpathLexicalState.DEFAULT_STATE,XpathLexicalState.OPERATOR_STATE,0);
+    this.dictDefault["NCName:NCName"] = new XpathExprToken.set(XpathTokenKind.XXXTODOXXX,XpathTokenName.QNAME,XpathLexicalState.DEFAULT_STATE,XpathLexicalState.OPERATOR_STATE,0);
 
-    this.dictDefault["LocalPart("] = new XpathTokenContext(XpathTokenKind.XXXTODOXXX,XpathTokenName.LOCALNAME_CALL,XpathLexicalState.DEFAULT_STATE,XpathLexicalState.DEFAULT_STATE,6);
-    this.dictDefault["NCName:NCName("] = new XpathTokenContext(XpathTokenKind.XXXTODOXXX,XpathTokenName.QNAME_CALL,XpathLexicalState.DEFAULT_STATE,XpathLexicalState.DEFAULT_STATE,6);
+    this.dictDefault["LocalPart("] = new XpathExprToken.set(XpathTokenKind.XXXTODOXXX,XpathTokenName.LOCALNAME_CALL,XpathLexicalState.DEFAULT_STATE,XpathLexicalState.DEFAULT_STATE,6);
+    this.dictDefault["NCName:NCName("] = new XpathExprToken.set(XpathTokenKind.XXXTODOXXX,XpathTokenName.QNAME_CALL,XpathLexicalState.DEFAULT_STATE,XpathLexicalState.DEFAULT_STATE,6);
 
     //node tests
-    this.dictDefault["text()"] = new XpathTokenContext(XpathTokenKind.XXXTODOXXX,XpathTokenName.TEXT_NODE_TEST,XpathLexicalState.DEFAULT_STATE,XpathLexicalState.DEFAULT_STATE,0);
-    this.dictDefault["comment()"] = new XpathTokenContext(XpathTokenKind.XXXTODOXXX,XpathTokenName.COMMENT_NODE_TEST,XpathLexicalState.DEFAULT_STATE,XpathLexicalState.DEFAULT_STATE,0);
-    this.dictDefault["node()"] = new XpathTokenContext(XpathTokenKind.XXXTODOXXX,XpathTokenName.ANY_NODE_TEST,XpathLexicalState.DEFAULT_STATE,XpathLexicalState.DEFAULT_STATE,0);
-    this.dictDefault["processing-instruction()"] = new XpathTokenContext(XpathTokenKind.XXXTODOXXX,XpathTokenName.PI_NODE_TEST,XpathLexicalState.DEFAULT_STATE,XpathLexicalState.DEFAULT_STATE,0);
+    this.dictDefault["text()"] = new XpathExprToken.set(XpathTokenKind.XXXTODOXXX,XpathTokenName.TEXT_NODE_TEST,XpathLexicalState.DEFAULT_STATE,XpathLexicalState.DEFAULT_STATE,0);
+    this.dictDefault["comment()"] = new XpathExprToken.set(XpathTokenKind.XXXTODOXXX,XpathTokenName.COMMENT_NODE_TEST,XpathLexicalState.DEFAULT_STATE,XpathLexicalState.DEFAULT_STATE,0);
+    this.dictDefault["node()"] = new XpathExprToken.set(XpathTokenKind.XXXTODOXXX,XpathTokenName.ANY_NODE_TEST,XpathLexicalState.DEFAULT_STATE,XpathLexicalState.DEFAULT_STATE,0);
+    this.dictDefault["processing-instruction()"] = new XpathExprToken.set(XpathTokenKind.XXXTODOXXX,XpathTokenName.PI_NODE_TEST,XpathLexicalState.DEFAULT_STATE,XpathLexicalState.DEFAULT_STATE,0);
 
     //variable prefix
-    this.dictDefault["\$"] = new XpathTokenContext(XpathTokenKind.XXXTODOXXX,XpathTokenName.VARIABLE_MARKER,XpathLexicalState.DEFAULT_STATE,XpathLexicalState.VARNAME_STATE,0);
+    this.dictDefault["\$"] = new XpathExprToken.set(XpathTokenKind.XXXTODOXXX,XpathTokenName.VARIABLE_MARKER,XpathLexicalState.DEFAULT_STATE,XpathLexicalState.VARNAME_STATE,0);
 
     //"," comma delimiter
-    this.dictDefault[","] = new XpathTokenContext(XpathTokenKind.XXXTODOXXX,XpathTokenName.COMMA,XpathLexicalState.DEFAULT_STATE,XpathLexicalState.DEFAULT_STATE,0);
+    this.dictDefault[","] = new XpathExprToken.set(XpathTokenKind.XXXTODOXXX,XpathTokenName.COMMA,XpathLexicalState.DEFAULT_STATE,XpathLexicalState.DEFAULT_STATE,0);
 
     //"[" "]" predicates
-    this.dictDefault["["] = new XpathTokenContext(XpathTokenKind.XXXTODOXXX,XpathTokenName.OPEN_BRACKET,XpathLexicalState.DEFAULT_STATE,XpathLexicalState.DEFAULT_STATE,0);
-    this.dictDefault["]"] = new XpathTokenContext(XpathTokenKind.XXXTODOXXX,XpathTokenName.CLOSE_BRACKET,XpathLexicalState.DEFAULT_STATE,XpathLexicalState.OPERATOR_STATE,0);
+    this.dictDefault["["] = new XpathExprToken.set(XpathTokenKind.XXXTODOXXX,XpathTokenName.OPEN_BRACKET,XpathLexicalState.DEFAULT_STATE,XpathLexicalState.DEFAULT_STATE,0);
+    this.dictDefault["]"] = new XpathExprToken.set(XpathTokenKind.XXXTODOXXX,XpathTokenName.CLOSE_BRACKET,XpathLexicalState.DEFAULT_STATE,XpathLexicalState.OPERATOR_STATE,0);
 
   }
 
   void _initOperatorDictionary(){
     
-    this.dictOperator["("] = new XpathTokenContext(XpathTokenKind.XXXTODOXXX,XpathTokenName.LEFTPAREN,XpathLexicalState.OPERATOR_STATE,XpathLexicalState.DEFAULT_STATE,0);
-    this.dictOperator[")"] = new XpathTokenContext(XpathTokenKind.XXXTODOXXX,XpathTokenName.RIGHTPAREN,XpathLexicalState.OPERATOR_STATE,XpathLexicalState.OPERATOR_STATE,0);
+    this.dictOperator["("] = new XpathExprToken.set(XpathTokenKind.XXXTODOXXX,XpathTokenName.LEFTPAREN,XpathLexicalState.OPERATOR_STATE,XpathLexicalState.DEFAULT_STATE,0);
+    this.dictOperator[")"] = new XpathExprToken.set(XpathTokenKind.XXXTODOXXX,XpathTokenName.RIGHTPAREN,XpathLexicalState.OPERATOR_STATE,XpathLexicalState.OPERATOR_STATE,0);
 
-    this.dictOperator["/"] = new XpathTokenContext(XpathTokenKind.XXXTODOXXX,XpathTokenName.FORWARDSLASH,XpathLexicalState.OPERATOR_STATE,XpathLexicalState.DEFAULT_STATE,6);
-    this.dictOperator["//"] = new XpathTokenContext(XpathTokenKind.XXXTODOXXX,XpathTokenName.DOUBLE_FORWARDSLASH,XpathLexicalState.OPERATOR_STATE,XpathLexicalState.DEFAULT_STATE,6);
+    this.dictOperator["/"] = new XpathExprToken.set(XpathTokenKind.XXXTODOXXX,XpathTokenName.FORWARDSLASH,XpathLexicalState.OPERATOR_STATE,XpathLexicalState.DEFAULT_STATE,6);
+    this.dictOperator["//"] = new XpathExprToken.set(XpathTokenKind.XXXTODOXXX,XpathTokenName.DOUBLE_FORWARDSLASH,XpathLexicalState.OPERATOR_STATE,XpathLexicalState.DEFAULT_STATE,6);
 
     // "StringLiteral" 
-    this.dictOperator["StringLiteral"] = new XpathTokenContext(XpathTokenKind.XXXTODOXXX,XpathTokenName.STRING_LITERAL,XpathLexicalState.OPERATOR_STATE,XpathLexicalState.OPERATOR_STATE,0);
-    this.dictOperator["IntegerLiteral"] = new XpathTokenContext(XpathTokenKind.XXXTODOXXX,XpathTokenName.INTEGER_LITERAL,XpathLexicalState.OPERATOR_STATE,XpathLexicalState.OPERATOR_STATE,0);
-    this.dictOperator["DecimalLiteral"] = new XpathTokenContext(XpathTokenKind.XXXTODOXXX,XpathTokenName.DECIMAL_LITERAL,XpathLexicalState.OPERATOR_STATE,XpathLexicalState.OPERATOR_STATE,0);
-    this.dictOperator["DoubleLiteral"] = new XpathTokenContext(XpathTokenKind.XXXTODOXXX,XpathTokenName.DOUBLE_LITERAL,XpathLexicalState.OPERATOR_STATE,XpathLexicalState.OPERATOR_STATE,0);
+    this.dictOperator["StringLiteral"] = new XpathExprToken.set(XpathTokenKind.XXXTODOXXX,XpathTokenName.STRING_LITERAL,XpathLexicalState.OPERATOR_STATE,XpathLexicalState.OPERATOR_STATE,0);
+    this.dictOperator["IntegerLiteral"] = new XpathExprToken.set(XpathTokenKind.XXXTODOXXX,XpathTokenName.INTEGER_LITERAL,XpathLexicalState.OPERATOR_STATE,XpathLexicalState.OPERATOR_STATE,0);
+    this.dictOperator["DecimalLiteral"] = new XpathExprToken.set(XpathTokenKind.XXXTODOXXX,XpathTokenName.DECIMAL_LITERAL,XpathLexicalState.OPERATOR_STATE,XpathLexicalState.OPERATOR_STATE,0);
+    this.dictOperator["DoubleLiteral"] = new XpathExprToken.set(XpathTokenKind.XXXTODOXXX,XpathTokenName.DOUBLE_LITERAL,XpathLexicalState.OPERATOR_STATE,XpathLexicalState.OPERATOR_STATE,0);
 
-    this.dictOperator["\$"] = new XpathTokenContext(XpathTokenKind.XXXTODOXXX,XpathTokenName.VARIABLE_MARKER,XpathLexicalState.OPERATOR_STATE,XpathLexicalState.VARNAME_STATE,0);
+    this.dictOperator["\$"] = new XpathExprToken.set(XpathTokenKind.XXXTODOXXX,XpathTokenName.VARIABLE_MARKER,XpathLexicalState.OPERATOR_STATE,XpathLexicalState.VARNAME_STATE,0);
 
-    this.dictOperator["*"] = new XpathTokenContext(XpathTokenKind.XXXTODOXXX,XpathTokenName.MULTIPLY,XpathLexicalState.OPERATOR_STATE, XpathLexicalState.DEFAULT_STATE,5);
+    this.dictOperator["*"] = new XpathExprToken.set(XpathTokenKind.XXXTODOXXX,XpathTokenName.MULTIPLY,XpathLexicalState.OPERATOR_STATE, XpathLexicalState.DEFAULT_STATE,5);
 
     //"," comma delimiter
-    this.dictOperator[","] = new XpathTokenContext(XpathTokenKind.XXXTODOXXX,XpathTokenName.COMMA,XpathLexicalState.OPERATOR_STATE,XpathLexicalState.DEFAULT_STATE,0);
+    this.dictOperator[","] = new XpathExprToken.set(XpathTokenKind.XXXTODOXXX,XpathTokenName.COMMA,XpathLexicalState.OPERATOR_STATE,XpathLexicalState.DEFAULT_STATE,0);
 
     //"[" "]" predicates
-    this.dictOperator["["] = new XpathTokenContext(XpathTokenKind.XXXTODOXXX,XpathTokenName.OPEN_BRACKET,XpathLexicalState.OPERATOR_STATE,XpathLexicalState.DEFAULT_STATE,0);
-    this.dictOperator["]"] = new XpathTokenContext(XpathTokenKind.XXXTODOXXX,XpathTokenName.CLOSE_BRACKET,XpathLexicalState.OPERATOR_STATE,XpathLexicalState.OPERATOR_STATE,0);
+    this.dictOperator["["] = new XpathExprToken.set(XpathTokenKind.XXXTODOXXX,XpathTokenName.OPEN_BRACKET,XpathLexicalState.OPERATOR_STATE,XpathLexicalState.DEFAULT_STATE,0);
+    this.dictOperator["]"] = new XpathExprToken.set(XpathTokenKind.XXXTODOXXX,XpathTokenName.CLOSE_BRACKET,XpathLexicalState.OPERATOR_STATE,XpathLexicalState.OPERATOR_STATE,0);
 
     //"=" equals
-    this.dictOperator["="] = new XpathTokenContext(XpathTokenKind.XXXTODOXXX,XpathTokenName.EQUALS,XpathLexicalState.OPERATOR_STATE,XpathLexicalState.DEFAULT_STATE,0);    
+    this.dictOperator["="] = new XpathExprToken.set(XpathTokenKind.XXXTODOXXX,XpathTokenName.EQUALS,XpathLexicalState.OPERATOR_STATE,XpathLexicalState.DEFAULT_STATE,0);    
     
   }
   
   void _initQNameDictionary(){
-    this.dictQName["("] = new XpathTokenContext(XpathTokenKind.XXXTODOXXX,XpathTokenName.LEFTPAREN,XpathLexicalState.QNAME_STATE,XpathLexicalState.DEFAULT_STATE,0);
-    this.dictQName[")"] = new XpathTokenContext(XpathTokenKind.XXXTODOXXX,XpathTokenName.RIGHTPAREN,XpathLexicalState.QNAME_STATE,XpathLexicalState.OPERATOR_STATE,0);
+    this.dictQName["("] = new XpathExprToken.set(XpathTokenKind.XXXTODOXXX,XpathTokenName.LEFTPAREN,XpathLexicalState.QNAME_STATE,XpathLexicalState.DEFAULT_STATE,0);
+    this.dictQName[")"] = new XpathExprToken.set(XpathTokenKind.XXXTODOXXX,XpathTokenName.RIGHTPAREN,XpathLexicalState.QNAME_STATE,XpathLexicalState.OPERATOR_STATE,0);
 
     //name tests
-    this.dictQName["*"] = new XpathTokenContext(XpathTokenKind.XXXTODOXXX,XpathTokenName.WILDCARD,XpathLexicalState.QNAME_STATE,XpathLexicalState.OPERATOR_STATE,0);
-    this.dictQName["NCName:*"] = new XpathTokenContext(XpathTokenKind.XXXTODOXXX,XpathTokenName.LOCALNAME_WILDCARD,XpathLexicalState.QNAME_STATE,XpathLexicalState.OPERATOR_STATE,0);
-    this.dictQName["*:NCName"] = new XpathTokenContext(XpathTokenKind.XXXTODOXXX,XpathTokenName.NAMESPACE_WILDCARD,XpathLexicalState.QNAME_STATE,XpathLexicalState.OPERATOR_STATE,0);
-    this.dictQName["LocalPart"] = new XpathTokenContext(XpathTokenKind.XXXTODOXXX,XpathTokenName.LOCALNAME,XpathLexicalState.QNAME_STATE,XpathLexicalState.OPERATOR_STATE,0);
-    this.dictQName["NCName:NCName"] = new XpathTokenContext(XpathTokenKind.XXXTODOXXX,XpathTokenName.QNAME,XpathLexicalState.QNAME_STATE,XpathLexicalState.OPERATOR_STATE,0);
+    this.dictQName["*"] = new XpathExprToken.set(XpathTokenKind.XXXTODOXXX,XpathTokenName.WILDCARD,XpathLexicalState.QNAME_STATE,XpathLexicalState.OPERATOR_STATE,0);
+    this.dictQName["NCName:*"] = new XpathExprToken.set(XpathTokenKind.XXXTODOXXX,XpathTokenName.LOCALNAME_WILDCARD,XpathLexicalState.QNAME_STATE,XpathLexicalState.OPERATOR_STATE,0);
+    this.dictQName["*:NCName"] = new XpathExprToken.set(XpathTokenKind.XXXTODOXXX,XpathTokenName.NAMESPACE_WILDCARD,XpathLexicalState.QNAME_STATE,XpathLexicalState.OPERATOR_STATE,0);
+    this.dictQName["LocalPart"] = new XpathExprToken.set(XpathTokenKind.XXXTODOXXX,XpathTokenName.LOCALNAME,XpathLexicalState.QNAME_STATE,XpathLexicalState.OPERATOR_STATE,0);
+    this.dictQName["NCName:NCName"] = new XpathExprToken.set(XpathTokenKind.XXXTODOXXX,XpathTokenName.QNAME,XpathLexicalState.QNAME_STATE,XpathLexicalState.OPERATOR_STATE,0);
 
     //steps
-    this.dictQName["/"] = new XpathTokenContext(XpathTokenKind.XXXTODOXXX,XpathTokenName.FORWARDSLASH,XpathLexicalState.QNAME_STATE,XpathLexicalState.QNAME_STATE,6);
-    this.dictQName["//"] = new XpathTokenContext(XpathTokenKind.XXXTODOXXX,XpathTokenName.DOUBLE_FORWARDSLASH,XpathLexicalState.QNAME_STATE,XpathLexicalState.QNAME_STATE,6);
+    this.dictQName["/"] = new XpathExprToken.set(XpathTokenKind.XXXTODOXXX,XpathTokenName.FORWARDSLASH,XpathLexicalState.QNAME_STATE,XpathLexicalState.QNAME_STATE,6);
+    this.dictQName["//"] = new XpathExprToken.set(XpathTokenKind.XXXTODOXXX,XpathTokenName.DOUBLE_FORWARDSLASH,XpathLexicalState.QNAME_STATE,XpathLexicalState.QNAME_STATE,6);
 
     //axis
-    this.dictQName["child::"] = new XpathTokenContext(XpathTokenKind.XXXTODOXXX,XpathTokenName.CHILD_AXIS,XpathLexicalState.QNAME_STATE, XpathLexicalState.QNAME_STATE,6);
-    this.dictQName["descendant::"] = new XpathTokenContext(XpathTokenKind.XXXTODOXXX,XpathTokenName.DESCENDANT_AXIS,XpathLexicalState.QNAME_STATE, XpathLexicalState.QNAME_STATE,6);
-    this.dictQName["parent::"] = new XpathTokenContext(XpathTokenKind.XXXTODOXXX,XpathTokenName.PARENT_AXIS,XpathLexicalState.QNAME_STATE, XpathLexicalState.QNAME_STATE,6);
-    this.dictQName["attribute::"] = new XpathTokenContext(XpathTokenKind.XXXTODOXXX,XpathTokenName.ATTRIBUTE_AXIS,XpathLexicalState.QNAME_STATE, XpathLexicalState.QNAME_STATE,6);
-    this.dictQName["self::"] = new XpathTokenContext(XpathTokenKind.XXXTODOXXX,XpathTokenName.SELF_AXIS,XpathLexicalState.QNAME_STATE, XpathLexicalState.QNAME_STATE,6);
-    this.dictQName["descendant-or-self::"] = new XpathTokenContext(XpathTokenKind.XXXTODOXXX,XpathTokenName.DESCENDANT_OR_SELF_AXIS,XpathLexicalState.QNAME_STATE, XpathLexicalState.QNAME_STATE,6);
-    this.dictQName["ancestor::"] = new XpathTokenContext(XpathTokenKind.XXXTODOXXX,XpathTokenName.ANCESTOR_AXIS,XpathLexicalState.QNAME_STATE, XpathLexicalState.QNAME_STATE,6);
-    this.dictQName["ancestor-or-self::"] = new XpathTokenContext(XpathTokenKind.XXXTODOXXX,XpathTokenName.ANCESTOR_OR_SELF_AXIS,XpathLexicalState.QNAME_STATE, XpathLexicalState.QNAME_STATE,6);
-    this.dictQName["following-sibling::"] = new XpathTokenContext(XpathTokenKind.XXXTODOXXX,XpathTokenName.FOLLOWING_SIBLING_AXIS,XpathLexicalState.QNAME_STATE, XpathLexicalState.QNAME_STATE,6);
-    this.dictQName["following::"] = new XpathTokenContext(XpathTokenKind.XXXTODOXXX,XpathTokenName.FOLLOWING_AXIS,XpathLexicalState.QNAME_STATE, XpathLexicalState.QNAME_STATE,6);
-    this.dictQName["preceding::"] = new XpathTokenContext(XpathTokenKind.XXXTODOXXX,XpathTokenName.PRECEDING_AXIS,XpathLexicalState.QNAME_STATE, XpathLexicalState.QNAME_STATE,6);
-    this.dictQName["preceding-sibling::"] = new XpathTokenContext(XpathTokenKind.XXXTODOXXX,XpathTokenName.PRECEDING_SIBLING_AXIS,XpathLexicalState.QNAME_STATE, XpathLexicalState.QNAME_STATE,6);
-    this.dictQName["namespace::"] = new XpathTokenContext(XpathTokenKind.XXXTODOXXX,XpathTokenName.NAMESPACE_AXIS,XpathLexicalState.QNAME_STATE, XpathLexicalState.QNAME_STATE,6);
+    this.dictQName["child::"] = new XpathExprToken.set(XpathTokenKind.XXXTODOXXX,XpathTokenName.CHILD_AXIS,XpathLexicalState.QNAME_STATE, XpathLexicalState.QNAME_STATE,6);
+    this.dictQName["descendant::"] = new XpathExprToken.set(XpathTokenKind.XXXTODOXXX,XpathTokenName.DESCENDANT_AXIS,XpathLexicalState.QNAME_STATE, XpathLexicalState.QNAME_STATE,6);
+    this.dictQName["parent::"] = new XpathExprToken.set(XpathTokenKind.XXXTODOXXX,XpathTokenName.PARENT_AXIS,XpathLexicalState.QNAME_STATE, XpathLexicalState.QNAME_STATE,6);
+    this.dictQName["attribute::"] = new XpathExprToken.set(XpathTokenKind.XXXTODOXXX,XpathTokenName.ATTRIBUTE_AXIS,XpathLexicalState.QNAME_STATE, XpathLexicalState.QNAME_STATE,6);
+    this.dictQName["self::"] = new XpathExprToken.set(XpathTokenKind.XXXTODOXXX,XpathTokenName.SELF_AXIS,XpathLexicalState.QNAME_STATE, XpathLexicalState.QNAME_STATE,6);
+    this.dictQName["descendant-or-self::"] = new XpathExprToken.set(XpathTokenKind.XXXTODOXXX,XpathTokenName.DESCENDANT_OR_SELF_AXIS,XpathLexicalState.QNAME_STATE, XpathLexicalState.QNAME_STATE,6);
+    this.dictQName["ancestor::"] = new XpathExprToken.set(XpathTokenKind.XXXTODOXXX,XpathTokenName.ANCESTOR_AXIS,XpathLexicalState.QNAME_STATE, XpathLexicalState.QNAME_STATE,6);
+    this.dictQName["ancestor-or-self::"] = new XpathExprToken.set(XpathTokenKind.XXXTODOXXX,XpathTokenName.ANCESTOR_OR_SELF_AXIS,XpathLexicalState.QNAME_STATE, XpathLexicalState.QNAME_STATE,6);
+    this.dictQName["following-sibling::"] = new XpathExprToken.set(XpathTokenKind.XXXTODOXXX,XpathTokenName.FOLLOWING_SIBLING_AXIS,XpathLexicalState.QNAME_STATE, XpathLexicalState.QNAME_STATE,6);
+    this.dictQName["following::"] = new XpathExprToken.set(XpathTokenKind.XXXTODOXXX,XpathTokenName.FOLLOWING_AXIS,XpathLexicalState.QNAME_STATE, XpathLexicalState.QNAME_STATE,6);
+    this.dictQName["preceding::"] = new XpathExprToken.set(XpathTokenKind.XXXTODOXXX,XpathTokenName.PRECEDING_AXIS,XpathLexicalState.QNAME_STATE, XpathLexicalState.QNAME_STATE,6);
+    this.dictQName["preceding-sibling::"] = new XpathExprToken.set(XpathTokenKind.XXXTODOXXX,XpathTokenName.PRECEDING_SIBLING_AXIS,XpathLexicalState.QNAME_STATE, XpathLexicalState.QNAME_STATE,6);
+    this.dictQName["namespace::"] = new XpathExprToken.set(XpathTokenKind.XXXTODOXXX,XpathTokenName.NAMESPACE_AXIS,XpathLexicalState.QNAME_STATE, XpathLexicalState.QNAME_STATE,6);
 
     //node tests
-    this.dictQName["text()"] = new XpathTokenContext(XpathTokenKind.XXXTODOXXX,XpathTokenName.TEXT_NODE_TEST,XpathLexicalState.QNAME_STATE,XpathLexicalState.OPERATOR_STATE,0);
-    this.dictQName["comment()"] = new XpathTokenContext(XpathTokenKind.XXXTODOXXX,XpathTokenName.COMMENT_NODE_TEST,XpathLexicalState.QNAME_STATE,XpathLexicalState.OPERATOR_STATE,0);
-    this.dictQName["node()"] = new XpathTokenContext(XpathTokenKind.XXXTODOXXX,XpathTokenName.ANY_NODE_TEST,XpathLexicalState.QNAME_STATE,XpathLexicalState.OPERATOR_STATE,0);
-    this.dictQName["processing-instruction()"] = new XpathTokenContext(XpathTokenKind.XXXTODOXXX,XpathTokenName.PI_NODE_TEST,XpathLexicalState.QNAME_STATE,XpathLexicalState.OPERATOR_STATE,0);
+    this.dictQName["text()"] = new XpathExprToken.set(XpathTokenKind.XXXTODOXXX,XpathTokenName.TEXT_NODE_TEST,XpathLexicalState.QNAME_STATE,XpathLexicalState.OPERATOR_STATE,0);
+    this.dictQName["comment()"] = new XpathExprToken.set(XpathTokenKind.XXXTODOXXX,XpathTokenName.COMMENT_NODE_TEST,XpathLexicalState.QNAME_STATE,XpathLexicalState.OPERATOR_STATE,0);
+    this.dictQName["node()"] = new XpathExprToken.set(XpathTokenKind.XXXTODOXXX,XpathTokenName.ANY_NODE_TEST,XpathLexicalState.QNAME_STATE,XpathLexicalState.OPERATOR_STATE,0);
+    this.dictQName["processing-instruction()"] = new XpathExprToken.set(XpathTokenKind.XXXTODOXXX,XpathTokenName.PI_NODE_TEST,XpathLexicalState.QNAME_STATE,XpathLexicalState.OPERATOR_STATE,0);
 
     //var prefix
-    this.dictQName["\$"] = new XpathTokenContext(XpathTokenKind.XXXTODOXXX,XpathTokenName.VARIABLE_MARKER,XpathLexicalState.QNAME_STATE,XpathLexicalState.VARNAME_STATE,0);
+    this.dictQName["\$"] = new XpathExprToken.set(XpathTokenKind.XXXTODOXXX,XpathTokenName.VARIABLE_MARKER,XpathLexicalState.QNAME_STATE,XpathLexicalState.VARNAME_STATE,0);
 
     //"," comma delimiter
-    this.dictQName[","] = new XpathTokenContext(XpathTokenKind.XXXTODOXXX,XpathTokenName.COMMA,XpathLexicalState.QNAME_STATE,XpathLexicalState.DEFAULT_STATE,0);
+    this.dictQName[","] = new XpathExprToken.set(XpathTokenKind.XXXTODOXXX,XpathTokenName.COMMA,XpathLexicalState.QNAME_STATE,XpathLexicalState.DEFAULT_STATE,0);
   }
   
   void _initItemTypeDictionary(){
-    this.dictItemType[")"] = new XpathTokenContext(XpathTokenKind.XXXTODOXXX,XpathTokenName.RIGHTPAREN,XpathLexicalState.ITEMTYPE_STATE,XpathLexicalState.OPERATOR_STATE,0);    
+    this.dictItemType[")"] = new XpathExprToken.set(XpathTokenKind.XXXTODOXXX,XpathTokenName.RIGHTPAREN,XpathLexicalState.ITEMTYPE_STATE,XpathLexicalState.OPERATOR_STATE,0);    
   }
   
   void _initVarNameDictionary(){
     //rather than create a varname token have included the two acceptable forms of QName
-    this.dictVarName["LocalPart"] = new XpathTokenContext(XpathTokenKind.XXXTODOXXX,XpathTokenName.LOCALNAME,XpathLexicalState.VARNAME_STATE,XpathLexicalState.OPERATOR_STATE,0);
-    this.dictVarName["NCName:NCName"] = new XpathTokenContext(XpathTokenKind.XXXTODOXXX,XpathTokenName.QNAME,XpathLexicalState.VARNAME_STATE,XpathLexicalState.OPERATOR_STATE,0);   
+    this.dictVarName["LocalPart"] = new XpathExprToken.set(XpathTokenKind.XXXTODOXXX,XpathTokenName.LOCALNAME,XpathLexicalState.VARNAME_STATE,XpathLexicalState.OPERATOR_STATE,0);
+    this.dictVarName["NCName:NCName"] = new XpathExprToken.set(XpathTokenKind.XXXTODOXXX,XpathTokenName.QNAME,XpathLexicalState.VARNAME_STATE,XpathLexicalState.OPERATOR_STATE,0);   
   }
   
   void _initTokens(){
@@ -1019,4 +1051,6 @@ class XpathEvaluationEngine {
 
     
   }
+  
+
 }

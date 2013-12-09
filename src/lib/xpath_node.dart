@@ -1,3 +1,21 @@
+/* 
+xpath4dart is a dart implementation of XPath 2.0 
+Author: Peter Schonefeld (peter dot schonefeld at gmail)
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+part of xpath.dart;
 
 class XpathNode extends XpathItem {
   int documentOrder = 0;
@@ -66,12 +84,12 @@ class XpathNode extends XpathItem {
   
   // set child instance at postion
   void setChildAt(int postion, XpathNode node){
-    this.children.insertRange(postion,1,node);      
+    this.children.insert(postion,node);      
   }
   
   // set attribute at postion 
   void setAttributeAt(int position, XpathNode attr){
-    this.attributes.insertRange(position,1,attr);
+    this.attributes.insert(position,attr);
   }  
   
   void setNSNode(){;} //TODO:

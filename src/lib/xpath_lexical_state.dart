@@ -8,5 +8,13 @@ class XpathLexicalState {
     VARNAME_STATE = 4;
   int value = DEFAULT_STATE;
   XpathLexicalState.set(this.value);
-  operator ==(XpathLexicalState other) => this.value == other.value;
+  operator ==(var other) {
+    if(other.runtimeType == int){
+      return this.value == other;
+    }
+    else if(other.runtimeType == XpathLexicalState){
+      return this.value == other.value;
+    }
+    else return false;
+  }
 }

@@ -15,12 +15,14 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+part of xpath.dart;
+
 class XpathItem {
   
   var value = "";
   var xsdType = ""; //TODO: will eventually point to instance of XsdType (xs:anySimpleType?) as default
   XpathNodeType nodeType = new XpathNodeType();
-  var domObject; //TODO: map to orinal input node 
+  var domObject; //TODO: map to source input Element 
   
   XpathItem(this.value, this.xsdType);
   XpathItem.defaultItem();

@@ -1,3 +1,4 @@
+part of xpath.dart;
 
 class XpathExpressionNode {
   bool isExprStart = false;
@@ -7,6 +8,8 @@ class XpathExpressionNode {
   XpathSyntaxNodeKind kind = new XpathSyntaxNodeKind.set(XpathSyntaxNodeKind.UNDEFINED);
   XpathToken token;
 
+  XpathExpressionNode();  
+  
   XpathExpressionNode.root(){
     this.isRoot = true;    
   }
@@ -20,7 +23,6 @@ class XpathExpressionNode {
     else return null; 
   }
   
-  //lots to do here come back later
   void traverse(){}  //TODO:  candidate remove
   
   void visit(){
@@ -38,14 +40,14 @@ class XpathExpressionNode {
     testVisit();
  
     for(XpathExpressionNode node in this.siblings){
-      result = result.concat(" sibling: ${node.testTraverse()}");
+      result += " sibling: ${node.testTraverse()}";
     }
     
     for(XpathExpressionNode node in this.children){
-      result = result.concat(" child: ${node.testTraverse()}");
+      result += " child: ${node.testTraverse()}";
     }
     
-    return result.concat("\n");
+    return "$result\n";
   }
   
   String testVisit(){

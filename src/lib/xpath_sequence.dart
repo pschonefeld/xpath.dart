@@ -1,3 +1,21 @@
+/* 
+xpath4dart is a dart implementation of XPath 2.0 
+Author: Peter Schonefeld (peter dot schonefeld at gmail)
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+part of xpath.dart;
 
 class XpathSequence {
   
@@ -30,10 +48,10 @@ class XpathSequence {
     String result = "";
     for(XpathItem item in this.items){
       if(item.isNode()){
-        result = result.concat("<${item.toString()}> , ");  
+        result += "<${item.toString()}> , ";  
       }
       else {
-        result = result.concat("${item.toString()} , ");
+        result += "${item.toString()} , ";
       }
     } 
     return result == ""?"nothing":result.substring(0,result.lastIndexOf(','));
@@ -46,14 +64,14 @@ class XpathSequence {
       if(item.isNode()){
         var s = item.toString();
         if(s.contains("\"")){
-          result = result.concat("$s , ");
+          result += "$s , ";
         }
         else {
-          result = result.concat("&lt;$s&gt; , ");
+          result += "&lt;$s&gt; , ";
         }
       }
       else {
-        result = result.concat("${item.toString()} , ");
+        result += "${item.toString()} , ";
       }
     } 
     return result == ""?"nothing":result.substring(0,result.lastIndexOf(','));

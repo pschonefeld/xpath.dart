@@ -1,3 +1,5 @@
+part of xpath.dart;
+
 /**
  * holds token state
  *
