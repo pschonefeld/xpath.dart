@@ -1,7 +1,9 @@
-library xpath.dart;
+library xpath_dart;
 
 part 'src/util.dart';
+part 'src/token_kind.dart';
+part 'src/token_name.dart';
 
-void main() {
-  print("<3 dart");
+class XPath {
+
 }

@@ -5,6 +5,13 @@ authors:
 description: Dart implementation of Xpath 3
 homepage: http://pschonefeld.github.io/xpath.dart/
 environment:
-  sdk: '>=1.19.0-dev.0.0 <2.0.0'
+  sdk: '>=1.0.0 <2.0.0'
+
+dependencies:
+  xml: any
+
 dev_dependencies:
-  browser: '^0.10.0+2'
+  test: '>=0.12.0 <0.13.0'
+
+analyzer:
+  strong-mode: true

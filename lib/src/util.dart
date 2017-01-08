@@ -1,4 +1,4 @@
-part of xpath.dart;
+part of xpath_dart;
 
 class Util {
 

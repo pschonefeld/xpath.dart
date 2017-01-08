@@ -1,6 +1,9 @@
 xpath_dart
 ==========
 
+in early stage implementation ... nothing to see here
+-----------------------------------------------------
+
 XPath 3.1 Implementation in Dart
 
 https://www.w3.org/TR/2016/CR-xpath-31-20161213/  (candidate rec)
