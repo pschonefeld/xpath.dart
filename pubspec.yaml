@@ -1,0 +1,10 @@
+name: xpath
+version: 0.0.1
+authors:
+- Peter Schonefeld <peter.schonefeld@gmail.com>
+description: Dart implementation of Xpath 3
+homepage: http://pschonefeld.github.io/xpath.dart/
+environment:
+  sdk: '>=1.19.0-dev.0.0 <2.0.0'
+dev_dependencies:
+  browser: '^0.10.0+2'

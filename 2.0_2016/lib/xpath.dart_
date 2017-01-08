@@ -1,7 +1,5 @@
 library xpath.dart;
 
-import 'dart:html';
-
 part 'util.dart';
 part 'xpath_item.dart';
 part 'xpath_sequence.dart';

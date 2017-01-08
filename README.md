@@ -1,4 +1,4 @@
-xpath.dart
+xpath_dart
 ==========
 
 XPath 3.1 Implementation in Dart
