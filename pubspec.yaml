@@ -12,6 +12,8 @@ dependencies:
 
 dev_dependencies:
   test: '>=0.12.0 <0.13.0'
+  xml_query_test_driver:
+      git: https://github.com/pschonefeld/XMLQueryTestDriver.git
 
 analyzer:
   strong-mode: true

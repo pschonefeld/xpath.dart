@@ -8,5 +8,7 @@ part 'src/item.dart';
 part 'src/node_type.dart';
 
 class XPath {
-
+    exec(String query, String input){
+      return '$query stub';
+    }
 }
