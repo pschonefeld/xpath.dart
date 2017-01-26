@@ -14,6 +14,18 @@ Testing impletmetation requires inclusion of test driver ... in pubspec.yaml inc
       xml_query_test_driver:
           git: https://github.com/pschonefeld/XMLQueryTestDriver.git
 
+setting up for tests:
+
+      XPath xpath = new XPath();
+      //TODO: following line to be set to reference test driver package
+      //will only work if the catalog is in a sibling folder to project
+      //with the path as specified in the argument
+      var testDriver = new TestDriver.resources('../xml-query-test-driver/lib/res/qt3_1_0/');
+      testDriver.setup('test/testlist.xml');
+      await testDriver.buildTestCases();
+      print('in test project:${testDriver.testQueue.length}');
+      testDriver.testQueue.forEach((k,v)=> print(testDriver.executeTest(v,xpath.exec)));
+
 inlcude selected catalog tests in test/testlist.xml (eg):
 
     <tests>
