@@ -1,7 +1,7 @@
 part of xpath_dart;
 
-class XpathPatternTokenPair {
+class PatternTokenPair {
   String pattern = "";
-  XpathExprToken token = new XpathExprToken();
-  XpathPatternTokenPair(this.pattern, this.token);
+  ExprToken token = new ExprToken();
+  PatternTokenPair(this.pattern, this.token);
 }
