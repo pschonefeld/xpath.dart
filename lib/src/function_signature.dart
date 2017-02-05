@@ -1,13 +1,14 @@
+part of xpath_dart;
 
-class XpathFunctionSignature {
+class FunctionSignature {
   String namespace = ""; //TODO: this should point to an inscope ns
   String localName = ""; 
   XsdType returnType;
-  XpathFunctionArity arity;
+  FunctionArity arity;
   
-  XpathFunctionSignature(this.namespace,this.localName, this.returnType, this.arity);
+  FunctionSignature(this.namespace,this.localName, this.returnType, this.arity);
   
-  operator ==(XpathFunctionSignature other){
+  operator ==(FunctionSignature other){
     bool result = true;
     if(this.namespace != other.namespace){
       result = false;

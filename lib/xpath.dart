@@ -1,7 +1,5 @@
 library xpath_dart;
 
-import 'dart:collection';
-
 part 'src/util.dart';
 part 'src/token_kind.dart';
 part 'src/token_name.dart';
@@ -22,9 +20,13 @@ part 'src/syntax_node_kind.dart';
 part 'src/pattern_item.dart';
 part 'src/node.dart';
 part 'src/expression_node.dart';
+part 'src/variable.dart';
+part 'src/function_arity.dart';
+part 'src/function_signature.dart';
+part 'src/function.dart';
+part 'src/static_environment.dart';
+part 'src/dynamic_environment.dart';
 
 class XPath {
-    exec(String query, String input){
-      return '$query stub';
-    }
+    exec(String query, String input) => '$query stub';
 }
