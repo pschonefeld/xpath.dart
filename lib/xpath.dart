@@ -26,6 +26,7 @@ part 'src/function_signature.dart';
 part 'src/function.dart';
 part 'src/static_environment.dart';
 part 'src/dynamic_environment.dart';
+part 'src/evaluation_engine.dart';
 
 class XPath {
     exec(String query, String input) => '$query stub';
