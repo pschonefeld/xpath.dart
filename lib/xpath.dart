@@ -29,5 +29,5 @@ part 'src/dynamic_environment.dart';
 part 'src/evaluation_engine.dart';
 
 class XPath {
-    exec(String query, String input) => '$query stub';
+    eval(String query, String input) => '$query stub';
 }
