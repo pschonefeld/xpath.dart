@@ -546,143 +546,143 @@ class EvaluationEngine {
 
   void _initDefaultDictionary(){
     
-    this.dictDefault["("] = new ExprToken.set(TokenKind.XXXTODOXXX,TokenName.LEFTPAREN,LexicalState.DEFAULT_STATE,LexicalState.DEFAULT_STATE,0);
-    this.dictDefault[")"] = new ExprToken.set(TokenKind.XXXTODOXXX,TokenName.RIGHTPAREN,LexicalState.DEFAULT_STATE,LexicalState.OPERATOR_STATE,0);
+    this.dictDefault["("] = new ExprToken.set(TokenKind.DEFAULT,TokenName.LEFTPAREN,LexicalState.DEFAULT_STATE,LexicalState.DEFAULT_STATE,0);
+    this.dictDefault[")"] = new ExprToken.set(TokenKind.DEFAULT,TokenName.RIGHTPAREN,LexicalState.DEFAULT_STATE,LexicalState.OPERATOR_STATE,0);
 
     // "StringLiteral" 
-    this.dictDefault["StringLiteral"] = new ExprToken.set(TokenKind.XXXTODOXXX,TokenName.STRING_LITERAL,LexicalState.DEFAULT_STATE,LexicalState.OPERATOR_STATE,0);
-    this.dictDefault["IntegerLiteral"] = new ExprToken.set(TokenKind.XXXTODOXXX,TokenName.INTEGER_LITERAL,LexicalState.DEFAULT_STATE,LexicalState.OPERATOR_STATE,0);
-    this.dictDefault["DecimalLiteral"] = new ExprToken.set(TokenKind.XXXTODOXXX,TokenName.DECIMAL_LITERAL,LexicalState.DEFAULT_STATE,LexicalState.OPERATOR_STATE,0);
-    this.dictDefault["DoubleLiteral"] = new ExprToken.set(TokenKind.XXXTODOXXX,TokenName.DOUBLE_LITERAL,LexicalState.DEFAULT_STATE,LexicalState.OPERATOR_STATE,0);
+    this.dictDefault["StringLiteral"] = new ExprToken.set(TokenKind.DEFAULT,TokenName.STRING_LITERAL,LexicalState.DEFAULT_STATE,LexicalState.OPERATOR_STATE,0);
+    this.dictDefault["IntegerLiteral"] = new ExprToken.set(TokenKind.DEFAULT,TokenName.INTEGER_LITERAL,LexicalState.DEFAULT_STATE,LexicalState.OPERATOR_STATE,0);
+    this.dictDefault["DecimalLiteral"] = new ExprToken.set(TokenKind.DEFAULT,TokenName.DECIMAL_LITERAL,LexicalState.DEFAULT_STATE,LexicalState.OPERATOR_STATE,0);
+    this.dictDefault["DoubleLiteral"] = new ExprToken.set(TokenKind.DEFAULT,TokenName.DOUBLE_LITERAL,LexicalState.DEFAULT_STATE,LexicalState.OPERATOR_STATE,0);
 
     //steps
-    this.dictDefault["/"] = new ExprToken.set(TokenKind.XXXTODOXXX,TokenName.FORWARDSLASH,LexicalState.DEFAULT_STATE,LexicalState.QNAME_STATE,0);
-    this.dictDefault["//"] = new ExprToken.set(TokenKind.XXXTODOXXX,TokenName.DOUBLE_FORWARDSLASH,LexicalState.DEFAULT_STATE,LexicalState.QNAME_STATE,0);
+    this.dictDefault["/"] = new ExprToken.set(TokenKind.DEFAULT,TokenName.FORWARDSLASH,LexicalState.DEFAULT_STATE,LexicalState.QNAME_STATE,0);
+    this.dictDefault["//"] = new ExprToken.set(TokenKind.DEFAULT,TokenName.DOUBLE_FORWARDSLASH,LexicalState.DEFAULT_STATE,LexicalState.QNAME_STATE,0);
 
     // axis
-    this.dictDefault["child::"] = new ExprToken.set(TokenKind.XXXTODOXXX,TokenName.CHILD_AXIS,LexicalState.DEFAULT_STATE, LexicalState.QNAME_STATE,6);
-    this.dictDefault["descendant::"] = new ExprToken.set(TokenKind.XXXTODOXXX,TokenName.DESCENDANT_AXIS,LexicalState.DEFAULT_STATE, LexicalState.QNAME_STATE,6);
-    this.dictDefault["parent::"] = new ExprToken.set(TokenKind.XXXTODOXXX,TokenName.PARENT_AXIS,LexicalState.DEFAULT_STATE, LexicalState.QNAME_STATE,6);
-    this.dictDefault["attribute::"] = new ExprToken.set(TokenKind.XXXTODOXXX,TokenName.ATTRIBUTE_AXIS,LexicalState.DEFAULT_STATE, LexicalState.QNAME_STATE,6);
-    this.dictDefault["self::"] = new ExprToken.set(TokenKind.XXXTODOXXX,TokenName.SELF_AXIS,LexicalState.DEFAULT_STATE, LexicalState.QNAME_STATE,6);
-    this.dictDefault["descendant-or-self::"] = new ExprToken.set(TokenKind.XXXTODOXXX,TokenName.DESCENDANT_OR_SELF_AXIS,LexicalState.DEFAULT_STATE, LexicalState.QNAME_STATE,6);
-    this.dictDefault["ancestor::"] = new ExprToken.set(TokenKind.XXXTODOXXX,TokenName.ANCESTOR_AXIS,LexicalState.DEFAULT_STATE, LexicalState.QNAME_STATE,6);
-    this.dictDefault["ancestor-or-self::"] = new ExprToken.set(TokenKind.XXXTODOXXX,TokenName.ANCESTOR_OR_SELF_AXIS,LexicalState.DEFAULT_STATE, LexicalState.QNAME_STATE,6);
-    this.dictDefault["following-sibling::"] = new ExprToken.set(TokenKind.XXXTODOXXX,TokenName.FOLLOWING_SIBLING_AXIS,LexicalState.DEFAULT_STATE, LexicalState.QNAME_STATE,6);
-    this.dictDefault["following::"] = new ExprToken.set(TokenKind.XXXTODOXXX,TokenName.FOLLOWING_AXIS,LexicalState.DEFAULT_STATE, LexicalState.QNAME_STATE,6);
-    this.dictDefault["preceding::"] = new ExprToken.set(TokenKind.XXXTODOXXX,TokenName.PRECEDING_AXIS,LexicalState.DEFAULT_STATE, LexicalState.QNAME_STATE,6);
-    this.dictDefault["preceding-sibling::"] = new ExprToken.set(TokenKind.XXXTODOXXX,TokenName.PRECEDING_SIBLING_AXIS,LexicalState.DEFAULT_STATE,LexicalState.QNAME_STATE,6);
-    this.dictDefault["namespace::"] = new ExprToken.set(TokenKind.XXXTODOXXX,TokenName.NAMESPACE_AXIS,LexicalState.DEFAULT_STATE, LexicalState.QNAME_STATE,6);
+    this.dictDefault["child::"] = new ExprToken.set(TokenKind.DEFAULT,TokenName.CHILD_AXIS,LexicalState.DEFAULT_STATE, LexicalState.QNAME_STATE,6);
+    this.dictDefault["descendant::"] = new ExprToken.set(TokenKind.DEFAULT,TokenName.DESCENDANT_AXIS,LexicalState.DEFAULT_STATE, LexicalState.QNAME_STATE,6);
+    this.dictDefault["parent::"] = new ExprToken.set(TokenKind.DEFAULT,TokenName.PARENT_AXIS,LexicalState.DEFAULT_STATE, LexicalState.QNAME_STATE,6);
+    this.dictDefault["attribute::"] = new ExprToken.set(TokenKind.DEFAULT,TokenName.ATTRIBUTE_AXIS,LexicalState.DEFAULT_STATE, LexicalState.QNAME_STATE,6);
+    this.dictDefault["self::"] = new ExprToken.set(TokenKind.DEFAULT,TokenName.SELF_AXIS,LexicalState.DEFAULT_STATE, LexicalState.QNAME_STATE,6);
+    this.dictDefault["descendant-or-self::"] = new ExprToken.set(TokenKind.DEFAULT,TokenName.DESCENDANT_OR_SELF_AXIS,LexicalState.DEFAULT_STATE, LexicalState.QNAME_STATE,6);
+    this.dictDefault["ancestor::"] = new ExprToken.set(TokenKind.DEFAULT,TokenName.ANCESTOR_AXIS,LexicalState.DEFAULT_STATE, LexicalState.QNAME_STATE,6);
+    this.dictDefault["ancestor-or-self::"] = new ExprToken.set(TokenKind.DEFAULT,TokenName.ANCESTOR_OR_SELF_AXIS,LexicalState.DEFAULT_STATE, LexicalState.QNAME_STATE,6);
+    this.dictDefault["following-sibling::"] = new ExprToken.set(TokenKind.DEFAULT,TokenName.FOLLOWING_SIBLING_AXIS,LexicalState.DEFAULT_STATE, LexicalState.QNAME_STATE,6);
+    this.dictDefault["following::"] = new ExprToken.set(TokenKind.DEFAULT,TokenName.FOLLOWING_AXIS,LexicalState.DEFAULT_STATE, LexicalState.QNAME_STATE,6);
+    this.dictDefault["preceding::"] = new ExprToken.set(TokenKind.DEFAULT,TokenName.PRECEDING_AXIS,LexicalState.DEFAULT_STATE, LexicalState.QNAME_STATE,6);
+    this.dictDefault["preceding-sibling::"] = new ExprToken.set(TokenKind.DEFAULT,TokenName.PRECEDING_SIBLING_AXIS,LexicalState.DEFAULT_STATE,LexicalState.QNAME_STATE,6);
+    this.dictDefault["namespace::"] = new ExprToken.set(TokenKind.DEFAULT,TokenName.NAMESPACE_AXIS,LexicalState.DEFAULT_STATE, LexicalState.QNAME_STATE,6);
 
     //names
-    this.dictDefault["*"] = new ExprToken.set(TokenKind.XXXTODOXXX,TokenName.WILDCARD,LexicalState.DEFAULT_STATE,LexicalState.OPERATOR_STATE,0);
-    this.dictDefault["NCName:*"] = new ExprToken.set(TokenKind.XXXTODOXXX,TokenName.LOCALNAME_WILDCARD,LexicalState.DEFAULT_STATE,LexicalState.OPERATOR_STATE,0);
-    this.dictDefault["*:NCName"] = new ExprToken.set(TokenKind.XXXTODOXXX,TokenName.NAMESPACE_WILDCARD,LexicalState.DEFAULT_STATE,LexicalState.OPERATOR_STATE,0);
-    this.dictDefault["LocalPart"] = new ExprToken.set(TokenKind.XXXTODOXXX,TokenName.LOCALNAME,LexicalState.DEFAULT_STATE,LexicalState.OPERATOR_STATE,0);
-    this.dictDefault["NCName:NCName"] = new ExprToken.set(TokenKind.XXXTODOXXX,TokenName.QNAME,LexicalState.DEFAULT_STATE,LexicalState.OPERATOR_STATE,0);
+    this.dictDefault["*"] = new ExprToken.set(TokenKind.DEFAULT,TokenName.WILDCARD,LexicalState.DEFAULT_STATE,LexicalState.OPERATOR_STATE,0);
+    this.dictDefault["NCName:*"] = new ExprToken.set(TokenKind.DEFAULT,TokenName.LOCALNAME_WILDCARD,LexicalState.DEFAULT_STATE,LexicalState.OPERATOR_STATE,0);
+    this.dictDefault["*:NCName"] = new ExprToken.set(TokenKind.DEFAULT,TokenName.NAMESPACE_WILDCARD,LexicalState.DEFAULT_STATE,LexicalState.OPERATOR_STATE,0);
+    this.dictDefault["LocalPart"] = new ExprToken.set(TokenKind.DEFAULT,TokenName.LOCALNAME,LexicalState.DEFAULT_STATE,LexicalState.OPERATOR_STATE,0);
+    this.dictDefault["NCName:NCName"] = new ExprToken.set(TokenKind.DEFAULT,TokenName.QNAME,LexicalState.DEFAULT_STATE,LexicalState.OPERATOR_STATE,0);
 
-    this.dictDefault["LocalPart("] = new ExprToken.set(TokenKind.XXXTODOXXX,TokenName.LOCALNAME_CALL,LexicalState.DEFAULT_STATE,LexicalState.DEFAULT_STATE,6);
-    this.dictDefault["NCName:NCName("] = new ExprToken.set(TokenKind.XXXTODOXXX,TokenName.QNAME_CALL,LexicalState.DEFAULT_STATE,LexicalState.DEFAULT_STATE,6);
+    this.dictDefault["LocalPart("] = new ExprToken.set(TokenKind.DEFAULT,TokenName.LOCALNAME_CALL,LexicalState.DEFAULT_STATE,LexicalState.DEFAULT_STATE,6);
+    this.dictDefault["NCName:NCName("] = new ExprToken.set(TokenKind.DEFAULT,TokenName.QNAME_CALL,LexicalState.DEFAULT_STATE,LexicalState.DEFAULT_STATE,6);
 
     //node tests
-    this.dictDefault["text()"] = new ExprToken.set(TokenKind.XXXTODOXXX,TokenName.TEXT_NODE_TEST,LexicalState.DEFAULT_STATE,LexicalState.DEFAULT_STATE,0);
-    this.dictDefault["comment()"] = new ExprToken.set(TokenKind.XXXTODOXXX,TokenName.COMMENT_NODE_TEST,LexicalState.DEFAULT_STATE,LexicalState.DEFAULT_STATE,0);
-    this.dictDefault["node()"] = new ExprToken.set(TokenKind.XXXTODOXXX,TokenName.ANY_NODE_TEST,LexicalState.DEFAULT_STATE,LexicalState.DEFAULT_STATE,0);
-    this.dictDefault["processing-instruction()"] = new ExprToken.set(TokenKind.XXXTODOXXX,TokenName.PI_NODE_TEST,LexicalState.DEFAULT_STATE,LexicalState.DEFAULT_STATE,0);
+    this.dictDefault["text()"] = new ExprToken.set(TokenKind.DEFAULT,TokenName.TEXT_NODE_TEST,LexicalState.DEFAULT_STATE,LexicalState.DEFAULT_STATE,0);
+    this.dictDefault["comment()"] = new ExprToken.set(TokenKind.DEFAULT,TokenName.COMMENT_NODE_TEST,LexicalState.DEFAULT_STATE,LexicalState.DEFAULT_STATE,0);
+    this.dictDefault["node()"] = new ExprToken.set(TokenKind.DEFAULT,TokenName.ANY_NODE_TEST,LexicalState.DEFAULT_STATE,LexicalState.DEFAULT_STATE,0);
+    this.dictDefault["processing-instruction()"] = new ExprToken.set(TokenKind.DEFAULT,TokenName.PI_NODE_TEST,LexicalState.DEFAULT_STATE,LexicalState.DEFAULT_STATE,0);
 
     //variable prefix
-    this.dictDefault["\$"] = new ExprToken.set(TokenKind.XXXTODOXXX,TokenName.VARIABLE_MARKER,LexicalState.DEFAULT_STATE,LexicalState.VARNAME_STATE,0);
+    this.dictDefault["\$"] = new ExprToken.set(TokenKind.DEFAULT,TokenName.VARIABLE_MARKER,LexicalState.DEFAULT_STATE,LexicalState.VARNAME_STATE,0);
 
     //"," comma delimiter
-    this.dictDefault[","] = new ExprToken.set(TokenKind.XXXTODOXXX,TokenName.COMMA,LexicalState.DEFAULT_STATE,LexicalState.DEFAULT_STATE,0);
+    this.dictDefault[","] = new ExprToken.set(TokenKind.DEFAULT,TokenName.COMMA,LexicalState.DEFAULT_STATE,LexicalState.DEFAULT_STATE,0);
 
     //"[" "]" predicates
-    this.dictDefault["["] = new ExprToken.set(TokenKind.XXXTODOXXX,TokenName.OPEN_BRACKET,LexicalState.DEFAULT_STATE,LexicalState.DEFAULT_STATE,0);
-    this.dictDefault["]"] = new ExprToken.set(TokenKind.XXXTODOXXX,TokenName.CLOSE_BRACKET,LexicalState.DEFAULT_STATE,LexicalState.OPERATOR_STATE,0);
+    this.dictDefault["["] = new ExprToken.set(TokenKind.DEFAULT,TokenName.OPEN_BRACKET,LexicalState.DEFAULT_STATE,LexicalState.DEFAULT_STATE,0);
+    this.dictDefault["]"] = new ExprToken.set(TokenKind.DEFAULT,TokenName.CLOSE_BRACKET,LexicalState.DEFAULT_STATE,LexicalState.OPERATOR_STATE,0);
 
   }
 
   void _initOperatorDictionary(){
     
-    this.dictOperator["("] = new ExprToken.set(TokenKind.XXXTODOXXX,TokenName.LEFTPAREN,LexicalState.OPERATOR_STATE,LexicalState.DEFAULT_STATE,0);
-    this.dictOperator[")"] = new ExprToken.set(TokenKind.XXXTODOXXX,TokenName.RIGHTPAREN,LexicalState.OPERATOR_STATE,LexicalState.OPERATOR_STATE,0);
+    this.dictOperator["("] = new ExprToken.set(TokenKind.DEFAULT,TokenName.LEFTPAREN,LexicalState.OPERATOR_STATE,LexicalState.DEFAULT_STATE,0);
+    this.dictOperator[")"] = new ExprToken.set(TokenKind.DEFAULT,TokenName.RIGHTPAREN,LexicalState.OPERATOR_STATE,LexicalState.OPERATOR_STATE,0);
 
-    this.dictOperator["/"] = new ExprToken.set(TokenKind.XXXTODOXXX,TokenName.FORWARDSLASH,LexicalState.OPERATOR_STATE,LexicalState.DEFAULT_STATE,6);
-    this.dictOperator["//"] = new ExprToken.set(TokenKind.XXXTODOXXX,TokenName.DOUBLE_FORWARDSLASH,LexicalState.OPERATOR_STATE,LexicalState.DEFAULT_STATE,6);
+    this.dictOperator["/"] = new ExprToken.set(TokenKind.DEFAULT,TokenName.FORWARDSLASH,LexicalState.OPERATOR_STATE,LexicalState.DEFAULT_STATE,6);
+    this.dictOperator["//"] = new ExprToken.set(TokenKind.DEFAULT,TokenName.DOUBLE_FORWARDSLASH,LexicalState.OPERATOR_STATE,LexicalState.DEFAULT_STATE,6);
 
     // "StringLiteral" 
-    this.dictOperator["StringLiteral"] = new ExprToken.set(TokenKind.XXXTODOXXX,TokenName.STRING_LITERAL,LexicalState.OPERATOR_STATE,LexicalState.OPERATOR_STATE,0);
-    this.dictOperator["IntegerLiteral"] = new ExprToken.set(TokenKind.XXXTODOXXX,TokenName.INTEGER_LITERAL,LexicalState.OPERATOR_STATE,LexicalState.OPERATOR_STATE,0);
-    this.dictOperator["DecimalLiteral"] = new ExprToken.set(TokenKind.XXXTODOXXX,TokenName.DECIMAL_LITERAL,LexicalState.OPERATOR_STATE,LexicalState.OPERATOR_STATE,0);
-    this.dictOperator["DoubleLiteral"] = new ExprToken.set(TokenKind.XXXTODOXXX,TokenName.DOUBLE_LITERAL,LexicalState.OPERATOR_STATE,LexicalState.OPERATOR_STATE,0);
+    this.dictOperator["StringLiteral"] = new ExprToken.set(TokenKind.DEFAULT,TokenName.STRING_LITERAL,LexicalState.OPERATOR_STATE,LexicalState.OPERATOR_STATE,0);
+    this.dictOperator["IntegerLiteral"] = new ExprToken.set(TokenKind.DEFAULT,TokenName.INTEGER_LITERAL,LexicalState.OPERATOR_STATE,LexicalState.OPERATOR_STATE,0);
+    this.dictOperator["DecimalLiteral"] = new ExprToken.set(TokenKind.DEFAULT,TokenName.DECIMAL_LITERAL,LexicalState.OPERATOR_STATE,LexicalState.OPERATOR_STATE,0);
+    this.dictOperator["DoubleLiteral"] = new ExprToken.set(TokenKind.DEFAULT,TokenName.DOUBLE_LITERAL,LexicalState.OPERATOR_STATE,LexicalState.OPERATOR_STATE,0);
 
-    this.dictOperator["\$"] = new ExprToken.set(TokenKind.XXXTODOXXX,TokenName.VARIABLE_MARKER,LexicalState.OPERATOR_STATE,LexicalState.VARNAME_STATE,0);
+    this.dictOperator["\$"] = new ExprToken.set(TokenKind.DEFAULT,TokenName.VARIABLE_MARKER,LexicalState.OPERATOR_STATE,LexicalState.VARNAME_STATE,0);
 
-    this.dictOperator["*"] = new ExprToken.set(TokenKind.XXXTODOXXX,TokenName.MULTIPLY,LexicalState.OPERATOR_STATE, LexicalState.DEFAULT_STATE,5);
+    this.dictOperator["*"] = new ExprToken.set(TokenKind.DEFAULT,TokenName.MULTIPLY,LexicalState.OPERATOR_STATE, LexicalState.DEFAULT_STATE,5);
 
     //"," comma delimiter
-    this.dictOperator[","] = new ExprToken.set(TokenKind.XXXTODOXXX,TokenName.COMMA,LexicalState.OPERATOR_STATE,LexicalState.DEFAULT_STATE,0);
+    this.dictOperator[","] = new ExprToken.set(TokenKind.DEFAULT,TokenName.COMMA,LexicalState.OPERATOR_STATE,LexicalState.DEFAULT_STATE,0);
 
     //"[" "]" predicates
-    this.dictOperator["["] = new ExprToken.set(TokenKind.XXXTODOXXX,TokenName.OPEN_BRACKET,LexicalState.OPERATOR_STATE,LexicalState.DEFAULT_STATE,0);
-    this.dictOperator["]"] = new ExprToken.set(TokenKind.XXXTODOXXX,TokenName.CLOSE_BRACKET,LexicalState.OPERATOR_STATE,LexicalState.OPERATOR_STATE,0);
+    this.dictOperator["["] = new ExprToken.set(TokenKind.DEFAULT,TokenName.OPEN_BRACKET,LexicalState.OPERATOR_STATE,LexicalState.DEFAULT_STATE,0);
+    this.dictOperator["]"] = new ExprToken.set(TokenKind.DEFAULT,TokenName.CLOSE_BRACKET,LexicalState.OPERATOR_STATE,LexicalState.OPERATOR_STATE,0);
 
     //"=" equals
-    this.dictOperator["="] = new ExprToken.set(TokenKind.XXXTODOXXX,TokenName.EQUALS,LexicalState.OPERATOR_STATE,LexicalState.DEFAULT_STATE,0);    
+    this.dictOperator["="] = new ExprToken.set(TokenKind.DEFAULT,TokenName.EQUALS,LexicalState.OPERATOR_STATE,LexicalState.DEFAULT_STATE,0);    
     
   }
   
   void _initQNameDictionary(){
-    this.dictQName["("] = new ExprToken.set(TokenKind.XXXTODOXXX,TokenName.LEFTPAREN,LexicalState.QNAME_STATE,LexicalState.DEFAULT_STATE,0);
-    this.dictQName[")"] = new ExprToken.set(TokenKind.XXXTODOXXX,TokenName.RIGHTPAREN,LexicalState.QNAME_STATE,LexicalState.OPERATOR_STATE,0);
+    this.dictQName["("] = new ExprToken.set(TokenKind.DEFAULT,TokenName.LEFTPAREN,LexicalState.QNAME_STATE,LexicalState.DEFAULT_STATE,0);
+    this.dictQName[")"] = new ExprToken.set(TokenKind.DEFAULT,TokenName.RIGHTPAREN,LexicalState.QNAME_STATE,LexicalState.OPERATOR_STATE,0);
 
     //name tests
-    this.dictQName["*"] = new ExprToken.set(TokenKind.XXXTODOXXX,TokenName.WILDCARD,LexicalState.QNAME_STATE,LexicalState.OPERATOR_STATE,0);
-    this.dictQName["NCName:*"] = new ExprToken.set(TokenKind.XXXTODOXXX,TokenName.LOCALNAME_WILDCARD,LexicalState.QNAME_STATE,LexicalState.OPERATOR_STATE,0);
-    this.dictQName["*:NCName"] = new ExprToken.set(TokenKind.XXXTODOXXX,TokenName.NAMESPACE_WILDCARD,LexicalState.QNAME_STATE,LexicalState.OPERATOR_STATE,0);
-    this.dictQName["LocalPart"] = new ExprToken.set(TokenKind.XXXTODOXXX,TokenName.LOCALNAME,LexicalState.QNAME_STATE,LexicalState.OPERATOR_STATE,0);
-    this.dictQName["NCName:NCName"] = new ExprToken.set(TokenKind.XXXTODOXXX,TokenName.QNAME,LexicalState.QNAME_STATE,LexicalState.OPERATOR_STATE,0);
+    this.dictQName["*"] = new ExprToken.set(TokenKind.DEFAULT,TokenName.WILDCARD,LexicalState.QNAME_STATE,LexicalState.OPERATOR_STATE,0);
+    this.dictQName["NCName:*"] = new ExprToken.set(TokenKind.DEFAULT,TokenName.LOCALNAME_WILDCARD,LexicalState.QNAME_STATE,LexicalState.OPERATOR_STATE,0);
+    this.dictQName["*:NCName"] = new ExprToken.set(TokenKind.DEFAULT,TokenName.NAMESPACE_WILDCARD,LexicalState.QNAME_STATE,LexicalState.OPERATOR_STATE,0);
+    this.dictQName["LocalPart"] = new ExprToken.set(TokenKind.DEFAULT,TokenName.LOCALNAME,LexicalState.QNAME_STATE,LexicalState.OPERATOR_STATE,0);
+    this.dictQName["NCName:NCName"] = new ExprToken.set(TokenKind.DEFAULT,TokenName.QNAME,LexicalState.QNAME_STATE,LexicalState.OPERATOR_STATE,0);
 
     //steps
-    this.dictQName["/"] = new ExprToken.set(TokenKind.XXXTODOXXX,TokenName.FORWARDSLASH,LexicalState.QNAME_STATE,LexicalState.QNAME_STATE,6);
-    this.dictQName["//"] = new ExprToken.set(TokenKind.XXXTODOXXX,TokenName.DOUBLE_FORWARDSLASH,LexicalState.QNAME_STATE,LexicalState.QNAME_STATE,6);
+    this.dictQName["/"] = new ExprToken.set(TokenKind.DEFAULT,TokenName.FORWARDSLASH,LexicalState.QNAME_STATE,LexicalState.QNAME_STATE,6);
+    this.dictQName["//"] = new ExprToken.set(TokenKind.DEFAULT,TokenName.DOUBLE_FORWARDSLASH,LexicalState.QNAME_STATE,LexicalState.QNAME_STATE,6);
 
     //axis
-    this.dictQName["child::"] = new ExprToken.set(TokenKind.XXXTODOXXX,TokenName.CHILD_AXIS,LexicalState.QNAME_STATE, LexicalState.QNAME_STATE,6);
-    this.dictQName["descendant::"] = new ExprToken.set(TokenKind.XXXTODOXXX,TokenName.DESCENDANT_AXIS,LexicalState.QNAME_STATE, LexicalState.QNAME_STATE,6);
-    this.dictQName["parent::"] = new ExprToken.set(TokenKind.XXXTODOXXX,TokenName.PARENT_AXIS,LexicalState.QNAME_STATE, LexicalState.QNAME_STATE,6);
-    this.dictQName["attribute::"] = new ExprToken.set(TokenKind.XXXTODOXXX,TokenName.ATTRIBUTE_AXIS,LexicalState.QNAME_STATE, LexicalState.QNAME_STATE,6);
-    this.dictQName["self::"] = new ExprToken.set(TokenKind.XXXTODOXXX,TokenName.SELF_AXIS,LexicalState.QNAME_STATE, LexicalState.QNAME_STATE,6);
-    this.dictQName["descendant-or-self::"] = new ExprToken.set(TokenKind.XXXTODOXXX,TokenName.DESCENDANT_OR_SELF_AXIS,LexicalState.QNAME_STATE, LexicalState.QNAME_STATE,6);
-    this.dictQName["ancestor::"] = new ExprToken.set(TokenKind.XXXTODOXXX,TokenName.ANCESTOR_AXIS,LexicalState.QNAME_STATE, LexicalState.QNAME_STATE,6);
-    this.dictQName["ancestor-or-self::"] = new ExprToken.set(TokenKind.XXXTODOXXX,TokenName.ANCESTOR_OR_SELF_AXIS,LexicalState.QNAME_STATE, LexicalState.QNAME_STATE,6);
-    this.dictQName["following-sibling::"] = new ExprToken.set(TokenKind.XXXTODOXXX,TokenName.FOLLOWING_SIBLING_AXIS,LexicalState.QNAME_STATE, LexicalState.QNAME_STATE,6);
-    this.dictQName["following::"] = new ExprToken.set(TokenKind.XXXTODOXXX,TokenName.FOLLOWING_AXIS,LexicalState.QNAME_STATE, LexicalState.QNAME_STATE,6);
-    this.dictQName["preceding::"] = new ExprToken.set(TokenKind.XXXTODOXXX,TokenName.PRECEDING_AXIS,LexicalState.QNAME_STATE, LexicalState.QNAME_STATE,6);
-    this.dictQName["preceding-sibling::"] = new ExprToken.set(TokenKind.XXXTODOXXX,TokenName.PRECEDING_SIBLING_AXIS,LexicalState.QNAME_STATE, LexicalState.QNAME_STATE,6);
-    this.dictQName["namespace::"] = new ExprToken.set(TokenKind.XXXTODOXXX,TokenName.NAMESPACE_AXIS,LexicalState.QNAME_STATE, LexicalState.QNAME_STATE,6);
+    this.dictQName["child::"] = new ExprToken.set(TokenKind.DEFAULT,TokenName.CHILD_AXIS,LexicalState.QNAME_STATE, LexicalState.QNAME_STATE,6);
+    this.dictQName["descendant::"] = new ExprToken.set(TokenKind.DEFAULT,TokenName.DESCENDANT_AXIS,LexicalState.QNAME_STATE, LexicalState.QNAME_STATE,6);
+    this.dictQName["parent::"] = new ExprToken.set(TokenKind.DEFAULT,TokenName.PARENT_AXIS,LexicalState.QNAME_STATE, LexicalState.QNAME_STATE,6);
+    this.dictQName["attribute::"] = new ExprToken.set(TokenKind.DEFAULT,TokenName.ATTRIBUTE_AXIS,LexicalState.QNAME_STATE, LexicalState.QNAME_STATE,6);
+    this.dictQName["self::"] = new ExprToken.set(TokenKind.DEFAULT,TokenName.SELF_AXIS,LexicalState.QNAME_STATE, LexicalState.QNAME_STATE,6);
+    this.dictQName["descendant-or-self::"] = new ExprToken.set(TokenKind.DEFAULT,TokenName.DESCENDANT_OR_SELF_AXIS,LexicalState.QNAME_STATE, LexicalState.QNAME_STATE,6);
+    this.dictQName["ancestor::"] = new ExprToken.set(TokenKind.DEFAULT,TokenName.ANCESTOR_AXIS,LexicalState.QNAME_STATE, LexicalState.QNAME_STATE,6);
+    this.dictQName["ancestor-or-self::"] = new ExprToken.set(TokenKind.DEFAULT,TokenName.ANCESTOR_OR_SELF_AXIS,LexicalState.QNAME_STATE, LexicalState.QNAME_STATE,6);
+    this.dictQName["following-sibling::"] = new ExprToken.set(TokenKind.DEFAULT,TokenName.FOLLOWING_SIBLING_AXIS,LexicalState.QNAME_STATE, LexicalState.QNAME_STATE,6);
+    this.dictQName["following::"] = new ExprToken.set(TokenKind.DEFAULT,TokenName.FOLLOWING_AXIS,LexicalState.QNAME_STATE, LexicalState.QNAME_STATE,6);
+    this.dictQName["preceding::"] = new ExprToken.set(TokenKind.DEFAULT,TokenName.PRECEDING_AXIS,LexicalState.QNAME_STATE, LexicalState.QNAME_STATE,6);
+    this.dictQName["preceding-sibling::"] = new ExprToken.set(TokenKind.DEFAULT,TokenName.PRECEDING_SIBLING_AXIS,LexicalState.QNAME_STATE, LexicalState.QNAME_STATE,6);
+    this.dictQName["namespace::"] = new ExprToken.set(TokenKind.DEFAULT,TokenName.NAMESPACE_AXIS,LexicalState.QNAME_STATE, LexicalState.QNAME_STATE,6);
 
     //node tests
-    this.dictQName["text()"] = new ExprToken.set(TokenKind.XXXTODOXXX,TokenName.TEXT_NODE_TEST,LexicalState.QNAME_STATE,LexicalState.OPERATOR_STATE,0);
-    this.dictQName["comment()"] = new ExprToken.set(TokenKind.XXXTODOXXX,TokenName.COMMENT_NODE_TEST,LexicalState.QNAME_STATE,LexicalState.OPERATOR_STATE,0);
-    this.dictQName["node()"] = new ExprToken.set(TokenKind.XXXTODOXXX,TokenName.ANY_NODE_TEST,LexicalState.QNAME_STATE,LexicalState.OPERATOR_STATE,0);
-    this.dictQName["processing-instruction()"] = new ExprToken.set(TokenKind.XXXTODOXXX,TokenName.PI_NODE_TEST,LexicalState.QNAME_STATE,LexicalState.OPERATOR_STATE,0);
+    this.dictQName["text()"] = new ExprToken.set(TokenKind.DEFAULT,TokenName.TEXT_NODE_TEST,LexicalState.QNAME_STATE,LexicalState.OPERATOR_STATE,0);
+    this.dictQName["comment()"] = new ExprToken.set(TokenKind.DEFAULT,TokenName.COMMENT_NODE_TEST,LexicalState.QNAME_STATE,LexicalState.OPERATOR_STATE,0);
+    this.dictQName["node()"] = new ExprToken.set(TokenKind.DEFAULT,TokenName.ANY_NODE_TEST,LexicalState.QNAME_STATE,LexicalState.OPERATOR_STATE,0);
+    this.dictQName["processing-instruction()"] = new ExprToken.set(TokenKind.DEFAULT,TokenName.PI_NODE_TEST,LexicalState.QNAME_STATE,LexicalState.OPERATOR_STATE,0);
 
     //var prefix
-    this.dictQName["\$"] = new ExprToken.set(TokenKind.XXXTODOXXX,TokenName.VARIABLE_MARKER,LexicalState.QNAME_STATE,LexicalState.VARNAME_STATE,0);
+    this.dictQName["\$"] = new ExprToken.set(TokenKind.DEFAULT,TokenName.VARIABLE_MARKER,LexicalState.QNAME_STATE,LexicalState.VARNAME_STATE,0);
 
     //"," comma delimiter
-    this.dictQName[","] = new ExprToken.set(TokenKind.XXXTODOXXX,TokenName.COMMA,LexicalState.QNAME_STATE,LexicalState.DEFAULT_STATE,0);
+    this.dictQName[","] = new ExprToken.set(TokenKind.DEFAULT,TokenName.COMMA,LexicalState.QNAME_STATE,LexicalState.DEFAULT_STATE,0);
   }
   
   void _initItemTypeDictionary(){
-    this.dictItemType[")"] = new ExprToken.set(TokenKind.XXXTODOXXX,TokenName.RIGHTPAREN,LexicalState.ITEMTYPE_STATE,LexicalState.OPERATOR_STATE,0);    
+    this.dictItemType[")"] = new ExprToken.set(TokenKind.DEFAULT,TokenName.RIGHTPAREN,LexicalState.ITEMTYPE_STATE,LexicalState.OPERATOR_STATE,0);    
   }
   
   void _initVarNameDictionary(){
     //rather than create a varname token have included the two acceptable forms of QName
-    this.dictVarName["LocalPart"] = new ExprToken.set(TokenKind.XXXTODOXXX,TokenName.LOCALNAME,LexicalState.VARNAME_STATE,LexicalState.OPERATOR_STATE,0);
-    this.dictVarName["NCName:NCName"] = new ExprToken.set(TokenKind.XXXTODOXXX,TokenName.QNAME,LexicalState.VARNAME_STATE,LexicalState.OPERATOR_STATE,0);   
+    this.dictVarName["LocalPart"] = new ExprToken.set(TokenKind.DEFAULT,TokenName.LOCALNAME,LexicalState.VARNAME_STATE,LexicalState.OPERATOR_STATE,0);
+    this.dictVarName["NCName:NCName"] = new ExprToken.set(TokenKind.DEFAULT,TokenName.QNAME,LexicalState.VARNAME_STATE,LexicalState.OPERATOR_STATE,0);   
   }
   
   void _initTokens(){

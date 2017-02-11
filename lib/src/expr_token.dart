@@ -1,7 +1,7 @@
 part of xpath_dart;
 
 class ExprToken {
-  TokenKind kind = TokenKind.XXXTODOXXX;
+  TokenKind kind = TokenKind.DEFAULT;
   TokenName name = TokenName.ANCESTOR_AXIS;
   LexicalState state = LexicalState.DEFAULT_STATE;
   LexicalState nextState = LexicalState.DEFAULT_STATE;
